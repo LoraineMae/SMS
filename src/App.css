@@ -18,7 +18,7 @@ body {
 }
 
 .dashboard-card {
-  background: linear-gradient(145deg, var(--bg-light), var(--bg-dark));
+  background: #657386;
   box-shadow: 8px 8px 16px var(--shadow-dark), -4px -4px 12px var(--shadow-light);
   border-radius: 1.5rem;
   border: 1px solid var(--border);
