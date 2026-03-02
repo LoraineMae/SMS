@@ -2,27 +2,51 @@ import React from 'react';
 import { User, ClipboardList, Stethoscope, BarChart3, ShieldCheck, Activity, ArrowLeft } from 'lucide-react';
 
 export const RoleSelectionScreen = ({ onSelect }) => (
-  <div className="min-h-screen flex flex-col items-center justify-center bg-[#2c3038]">
-    <div className="text-center mb-12">
-      <h2 className="text-5xl font-black text-white italic tracking-tighter">HEALTH<span className="text-blue-500">FLOW</span></h2>
-      <p className="text-gray-500 uppercase text-[10px] tracking-[0.5em] mt-4 font-bold">Priority Triage System</p>
+  <div className="min-h-screen flex flex-col justify-center bg-[#8395ac]">
+    <div className="text-center mb-12 w-full">
+      <h2 className="text-5xl font-black text-white italic tracking-tighter">
+        HEALTH<span className="text-blue-500">FLOW</span>
+      </h2>
+      <p className="text-gray-500 uppercase text-[10px] tracking-[0.5em] mt-4 font-bold">
+        Priority Triage System
+      </p>
     </div>
-    <div className="grid grid-cols-2 gap-8">
-      {[
-        {id: 'patient', label: 'Patient', icon: <User />, color: 'text-green-400'},
-        {id: 'triage', label: 'Nurse', icon: <Activity />, color: 'text-blue-400'},
-        {id: 'doctor', label: 'Doctor', icon: <Stethoscope />, color: 'text-purple-400'},
-        {id: 'manager', label: 'Manager', icon: <BarChart3 />, color: 'text-amber-400'}
-      ].map(role => (
-        <button key={role.id} onClick={() => onSelect(role.id)} className="dashboard-card w-56 h-56 flex flex-col items-center justify-center gap-5 hover:border-blue-500 transition-all text-white group">
-          <div className={`p-5 bg-white/5 rounded-3xl transition-colors group-hover:bg-blue-500 group-hover:text-white ${role.color}`}>{role.icon}</div>
-          <span className="font-bold tracking-widest text-xs uppercase">{role.label} PORTAL</span>
-        </button>
-      ))}
+    <div className="flex gap-10 px-10">
+
+      <div className="flex flex-col gap-6 items-start">
+        {[
+          {id: 'patient', label: 'Patient', icon: <User />, color: 'text-green-400'},
+          {id: 'triage', label: 'Nurse', icon: <Activity />, color: 'text-blue-400'},
+          {id: 'doctor', label: 'Doctor', icon: <Stethoscope />, color: 'text-purple-400'},
+          {id: 'manager', label: 'Manager', icon: <BarChart3 />, color: 'text-amber-400'}
+        ].map(role => (
+          <button
+            key={role.id}
+            onClick={() => onSelect(role.id)}
+            className="dashboard-card w-75 h-33 flex flex-col items-center justify-center gap-5 hover:border-blue-500 transition-all text-white group"
+          >
+            <div className={`p-5 bg-white rounded-3xl transition-colors group-hover:bg-blue-500 group-hover:text-black ${role.color}`}>
+              {role.icon}
+            </div>
+            <span className="font-bold tracking-widest text-xs uppercase">{role.label} PORTAL</span>
+          </button>
+        ))}
+      </div>
+
+     <div className="flex flex-col justify-start flex-1">
+  <div className="dashboard-card p-10 w-full text-white h-[600px] flex flex-col">
+    <center>
+    <h1 className="text-4xl font-bold mb-4">WELCOME!</h1>
+    <p className="text-white-400 text-sm">
+      hjgfcnffuydtfvhsr
+    </p>
+    </center>
+  </div>
+</div>
+
     </div>
   </div>
 );
-
 export const PatientIntakeForm = ({ formData, setFormData, addPatient }) => (
   <div className="max-w-2xl mx-auto dashboard-card p-10 text-white">
     <h2 className="text-2xl font-bold mb-8 flex items-center gap-3 border-b border-white/5 pb-4"><ClipboardList className="text-blue-500"/> Patient Registration</h2>
