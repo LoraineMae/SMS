@@ -1,79 +1,173 @@
-import React, { useState } from 'react';
-import { Calendar, LogOut, User, ClipboardList, Stethoscope, BarChart3, ArrowLeft, Activity } from 'lucide-react';
+// App.jsx — with queue ticket, waiting room display, session timeout
+import React, { useState, useEffect, useCallback } from 'react';
+import { LogOut, ArrowLeft, Activity, ClipboardList, Stethoscope, BarChart3, User, Clock } from 'lucide-react';
+import { supabase } from './lib/supabase';
 import { PriorityQueue } from './utils/PriorityQueue';
-import { 
-  RoleSelectionScreen, LoginScreen, PatientIntakeForm, 
-  TriageNurseView, DoctorView, ManagerView 
-} from './components/SchedulerViews';
+import { RoleSelectionScreen, PatientIntakeForm, TriageNurseView, DoctorView, ManagerView } from './components/SchedulerViews';
+import { LoginScreen } from './components/LoginScreen';
+import { QueueTicket } from './components/QueueTicket';
+import { WaitingRoomDisplay } from './components/WaitingRoomDisplay';
+import { useAuth } from './hooks/useAuth';
 import './App.css';
 
 function App() {
-  const [viewMode, setViewMode] = useState('landing'); // landing, login, patient-intake
-  const [selectedRole, setSelectedRole] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [viewMode,       setViewMode]       = useState('landing');
+  const [selectedRole,   setSelectedRole]   = useState(null);
+  const [patients,       setPatients]       = useState([]);
+  const [registeredPat,  setRegisteredPat]  = useState(null); // patient just registered
+  const [formData,       setFormData]       = useState({ fullname:'', dob:'', gender:'', phone:'', condition:'', urgency:'medium' });
 
-  // DATA STATE
-  const [patients, setPatients] = useState([]);
-  const [processedPatients, setProcessedPatients] = useState([]);
-  const [formData, setFormData] = useState({ 
-    fullname: '', dob: '', gender: '', address: '', phone: '', email: '', condition: '', urgency: 'medium' 
-  });
+  const { currentUser, isLoggedIn, authError, authLoading, login, logout, showTimeout, timeoutSeconds, stayLoggedIn } = useAuth();
 
-  const handleRoleSelection = (role) => {
-    setSelectedRole(role);
-    setViewMode(role === 'patient' ? 'patient-intake' : 'login');
+  // ── WAITING ROOM DISPLAY — special route ─────────────────────────────────
+  // Open http://localhost:5173?display=waiting on the TV
+  if (new URLSearchParams(window.location.search).get('display') === 'waiting') {
+    return <WaitingRoomDisplay/>;
+  }
+
+  // ── LOAD PATIENTS ─────────────────────────────────────────────────────────
+  const loadPatients = useCallback(async () => {
+    const { data, error } = await supabase.from('patients').select('*').order('arrival_time', { ascending: true });
+    if (!error && data) setPatients(data);
+  }, []);
+
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    loadPatients();
+    const channel = supabase.channel('patients-changes')
+      .on('postgres_changes', { event:'*', schema:'public', table:'patients' }, loadPatients)
+      .subscribe();
+    return () => supabase.removeChannel(channel);
+  }, [isLoggedIn, loadPatients]);
+
+  // ── ADD PATIENT ───────────────────────────────────────────────────────────
+  const addPatient = async () => {
+    if (!formData.fullname || !formData.condition) return alert('Fill Name and Condition');
+    const { data, error } = await supabase.from('patients').insert({
+      fullname:     formData.fullname,
+      dob:          formData.dob    || null,
+      gender:       formData.gender || null,
+      phone:        formData.phone  || null,
+      condition:    formData.condition,
+      urgency:      'medium',
+      arrival_time: new Date().toISOString(),
+    }).select().single();
+
+    if (error) { alert('Failed to add patient.'); return; }
+
+    setFormData({ fullname:'', dob:'', gender:'', phone:'', condition:'', urgency:'medium' });
+    setRegisteredPat(data); // show ticket
+    setViewMode('ticket');
   };
 
-  const handleLogin = (credentials) => {
-    // Simulated auth logic
-    const user = { fullName: 'Staff Member', role: selectedRole };
-    setCurrentUser(user);
-    setIsLoggedIn(true);
-  };
-
-  const addPatient = () => {
-    if (!formData.fullname || !formData.condition) return alert("Fill Name and Condition");
-    const newPatient = { ...formData, id: Date.now(), arrivalTime: Date.now() };
-    setPatients([...patients, newPatient]);
-    setFormData({ fullname: '', dob: '', gender: '', address: '', phone: '', email: '', condition: '', urgency: 'medium' });
-    alert("You have been added to the Priority Queue!");
-    setViewMode('landing');
-  };
-
-  const getSortedPatients = () => {
+  // ── SORTED PATIENTS ───────────────────────────────────────────────────────
+  const getSortedPatients = useCallback(() => {
     const pq = new PriorityQueue();
-    patients.forEach(p => pq.insert(p));
+    patients.forEach(p => pq.insert({ ...p, arrivalTime: new Date(p.arrival_time).getTime() }));
     const sorted = [];
-    while (pq.size() > 0) sorted.push(pq.extractMin());
+    while (pq.heap && pq.heap.length > 0) sorted.push(pq.extractMin());
     return sorted;
+  }, [patients]);
+
+  // ── AUTH ──────────────────────────────────────────────────────────────────
+  const handleRoleSelection = (role) => { setSelectedRole(role); setViewMode(role === 'patient' ? 'patient-intake' : 'login'); };
+  const handleLogin         = async (u, p, r) => { const ok = await login(u, p, r); if (ok) setViewMode('dashboard'); };
+  const handleLogout        = async () => { await logout(); setPatients([]); setViewMode('landing'); setSelectedRole(null); };
+
+  const getAccentColor = () => ({ triage:'#3b82f6', doctor:'#a855f7', manager:'#f59e0b' }[currentUser?.role] || '#3b82f6');
+  const getRoleIcon    = () => {
+    if (currentUser?.role === 'triage')  return <ClipboardList size={20}/>;
+    if (currentUser?.role === 'doctor')  return <Stethoscope size={20}/>;
+    if (currentUser?.role === 'manager') return <BarChart3 size={20}/>;
   };
 
-  // Views mapping
-  if (viewMode === 'landing') return <RoleSelectionScreen onSelect={handleRoleSelection} />;
-  
+  // ── VIEWS ─────────────────────────────────────────────────────────────────
+  if (viewMode === 'landing' || (!isLoggedIn && viewMode === 'dashboard'))
+    return <RoleSelectionScreen onSelect={handleRoleSelection}/>;
+
   if (viewMode === 'patient-intake') return (
-    <div className="p-8"><button onClick={() => setViewMode('landing')} className="text-blue-400 mb-4 flex items-center gap-2"><ArrowLeft size={18}/> Back</button>
-    <PatientIntakeForm formData={formData} setFormData={setFormData} addPatient={addPatient} /></div>
+    <div style={{ minHeight:'100vh', background:'#2c3038', padding:'2rem', fontFamily:'Poppins, sans-serif' }}>
+      <button onClick={() => setViewMode('landing')} style={{ background:'none', border:'none', color:'#22c55e', cursor:'pointer', display:'flex', alignItems:'center', gap:8, fontWeight:700, fontSize:'11px', textTransform:'uppercase', letterSpacing:'0.15em', marginBottom:'1.5rem', padding:0 }}>
+        <ArrowLeft size={16}/> Back
+      </button>
+      <PatientIntakeForm formData={formData} setFormData={setFormData} addPatient={addPatient}/>
+    </div>
+  );
+
+  // Queue ticket shown after registration
+  if (viewMode === 'ticket' && registeredPat) return (
+    <QueueTicket patient={registeredPat} onBack={() => { setRegisteredPat(null); setViewMode('landing'); }}/>
   );
 
   if (viewMode === 'login' && !isLoggedIn) return (
-    <LoginScreen role={selectedRole} onLogin={handleLogin} onBack={() => setViewMode('landing')} />
+    <LoginScreen role={selectedRole} onLogin={handleLogin} onBack={() => setViewMode('landing')} authError={authError} authLoading={authLoading}/>
   );
 
+  // Dashboard
   return (
-    <div className="min-h-screen">
-      <header className="glass-nav p-4 px-8 flex justify-between items-center sticky top-0 z-50">
-        <div className="flex items-center gap-3">
-          <Activity className="text-blue-500" />
-          <h1 className="font-bold text-xl">HealthFlow <span className="text-blue-500 text-sm">{currentUser.role.toUpperCase()}</span></h1>
+    <div style={{ display:'flex', minHeight:'100vh', background:'#2c3038', fontFamily:'Poppins, sans-serif' }}>
+
+      {/* TIMEOUT WARNING MODAL */}
+      {showTimeout && (
+        <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.7)', zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center' }}>
+          <div style={{ background:'#353a43', borderRadius:'1.5rem', border:'1px solid rgba(245,158,11,0.4)', padding:'2.5rem', maxWidth:'400px', width:'90%', textAlign:'center', boxShadow:'0 20px 60px rgba(0,0,0,0.5)' }}>
+            <div style={{ width:64, height:64, borderRadius:'50%', background:'rgba(245,158,11,0.15)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 1.5rem', color:'#f59e0b' }}>
+              <Clock size={32}/>
+            </div>
+            <h3 style={{ color:'white', fontWeight:900, fontSize:'1.2rem', margin:'0 0 8px', textTransform:'uppercase' }}>Session Expiring</h3>
+            <p style={{ color:'#9ca3af', fontSize:'13px', margin:'0 0 1.5rem' }}>You will be logged out due to inactivity in</p>
+            <div style={{ fontSize:'3rem', fontWeight:900, color: timeoutSeconds <= 30 ? '#ef4444' : '#f59e0b', marginBottom:'1.5rem' }}>
+              {Math.floor(timeoutSeconds/60)}:{(timeoutSeconds%60).toString().padStart(2,'0')}
+            </div>
+            <div style={{ display:'flex', gap:'1rem' }}>
+              <button onClick={handleLogout} style={{ flex:1, background:'rgba(239,68,68,0.15)', border:'1px solid rgba(239,68,68,0.3)', color:'#f87171', padding:'0.75rem', borderRadius:'0.75rem', fontWeight:700, fontSize:'12px', textTransform:'uppercase', cursor:'pointer' }}>Logout Now</button>
+              <button onClick={stayLoggedIn} style={{ flex:2, background:'#f59e0b', border:'none', color:'black', padding:'0.75rem', borderRadius:'0.75rem', fontWeight:700, fontSize:'12px', textTransform:'uppercase', cursor:'pointer' }}>Stay Logged In</button>
+            </div>
+          </div>
         </div>
-        <button onClick={() => {setIsLoggedIn(false); setViewMode('landing');}} className="text-gray-400 hover:text-white flex items-center gap-2"><LogOut size={18}/> Logout</button>
-      </header>
-      <main className="p-8 max-w-7xl mx-auto">
-        {currentUser.role === 'triage' && <TriageNurseView patients={patients} getSortedPatients={getSortedPatients} />}
-        {currentUser.role === 'doctor' && <DoctorView getSortedPatients={getSortedPatients} />}
-        {currentUser.role === 'manager' && <ManagerView patients={patients} />}
+      )}
+
+      {/* SIDEBAR */}
+      <aside style={{ width:'260px', background:'#353a43', borderRight:'1px solid rgba(255,255,255,0.05)', display:'flex', flexDirection:'column', padding:'1.5rem', position:'sticky', top:0, height:'100vh' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', marginBottom:'3rem', paddingLeft:'0.5rem' }}>
+          <Activity color={getAccentColor()} size={26}/>
+          <div>
+            <h1 style={{ fontWeight:900, fontSize:'1.1rem', fontStyle:'italic', letterSpacing:'-1px', color:'white', margin:0, lineHeight:1 }}>HEALTHFLOW</h1>
+            <p style={{ fontSize:'9px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.2em', color:getAccentColor(), margin:'4px 0 0' }}>{currentUser?.role}</p>
+          </div>
+        </div>
+        <nav style={{ flex:1 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:'1rem', padding:'0.75rem 1rem', borderRadius:'0.75rem', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.05)', color:getAccentColor(), marginBottom:'0.5rem' }}>
+            {getRoleIcon()}
+            <span style={{ fontWeight:700, fontSize:'12px', textTransform:'uppercase', letterSpacing:'0.1em' }}>Dashboard</span>
+          </div>
+          <div style={{ display:'flex', alignItems:'center', gap:'1rem', padding:'0.75rem 1rem', borderRadius:'0.75rem', color:'#4b5563', cursor:'not-allowed' }}>
+            <User size={20}/>
+            <span style={{ fontWeight:700, fontSize:'12px', textTransform:'uppercase', letterSpacing:'0.1em' }}>Profile</span>
+          </div>
+        </nav>
+        <div style={{ background:'rgba(0,0,0,0.2)', borderRadius:'0.75rem', padding:'0.75rem', marginBottom:'1rem', display:'flex', alignItems:'center', gap:8 }}>
+          <Clock size={12} color="#4b5563"/>
+          <span style={{ fontSize:'10px', color:'#4b5563', fontWeight:600 }}>Auto-logout: 15 min idle</span>
+        </div>
+        <div style={{ borderTop:'1px solid rgba(255,255,255,0.05)', paddingTop:'1.5rem' }}>
+          <div style={{ marginBottom:'1rem', paddingLeft:'0.5rem' }}>
+            <p style={{ color:'#4b5563', fontSize:'10px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.15em', margin:'0 0 4px' }}>Active User</p>
+            <p style={{ color:'white', fontWeight:700, fontSize:'13px', margin:0, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{currentUser?.fullName}</p>
+          </div>
+          <button onClick={handleLogout} style={{ width:'100%', display:'flex', alignItems:'center', justifyContent:'center', gap:'0.75rem', padding:'0.75rem', borderRadius:'0.75rem', background:'rgba(239,68,68,0.1)', color:'#f87171', border:'1px solid rgba(239,68,68,0.2)', cursor:'pointer', fontWeight:700, fontSize:'11px', textTransform:'uppercase', letterSpacing:'0.1em' }}>
+            <LogOut size={16}/> Logout
+          </button>
+        </div>
+      </aside>
+
+      {/* MAIN */}
+      <main style={{ flex:1, overflowY:'auto' }}>
+        <div style={{ maxWidth:'1100px', margin:'0 auto' }}>
+          {currentUser?.role === 'triage'  && <TriageNurseView patients={patients} getSortedPatients={getSortedPatients}/>}
+          {currentUser?.role === 'doctor'  && <DoctorView getSortedPatients={getSortedPatients}/>}
+          {currentUser?.role === 'manager' && <ManagerView patients={patients}/>}
+        </div>
       </main>
     </div>
   );
