@@ -64,12 +64,12 @@ export const WaitingRoomDisplay = () => {
     <div style={{ minHeight:'100vh', background:'#0f1117', fontFamily:'Poppins, sans-serif', display:'flex', flexDirection:'column' }}>
 
       {/* Header */}
-      <div style={{ background:'linear-gradient(135deg,#1a1d23,#0f1117)', borderBottom:'2px solid rgba(59,130,246,0.3)', padding:'1.5rem 3rem', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+      <div style={{ background:'linear-gradient(135deg,#1a1d23,#0f1117)', borderBottom:'2px solid rgba(34,197,94,0.3)', padding:'1.5rem 3rem', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
         <div style={{ display:'flex', alignItems:'center', gap:16 }}>
-          <Activity color="#3b82f6" size={36}/>
+          <Activity color="#22c55e" size={36}/>
           <div>
             <h1 style={{ color:'white', fontWeight:900, fontSize:'2rem', fontStyle:'italic', letterSpacing:'-2px', margin:0, lineHeight:1 }}>
-              HEALTH<span style={{ color:'#3b82f6' }}>FLOW</span>
+              HEALTH<span style={{ color:'#22c55e' }}>FLOW</span>
             </h1>
             <p style={{ color:'#6b7280', fontSize:'11px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.3em', margin:'4px 0 0' }}>Patient Queue Display</p>
           </div>

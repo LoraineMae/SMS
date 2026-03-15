@@ -18,18 +18,18 @@ export const LoginScreen = ({ role, onLogin, onBack, authError, authLoading }) =
   };
 
   const theme = {
-    triage:  { accent: 'text-blue-400',   border: 'border-blue-500/40',   bg: 'bg-blue-500/20',   btn: 'bg-blue-600 hover:bg-blue-500'   },
-    doctor:  { accent: 'text-purple-400', border: 'border-purple-500/40', bg: 'bg-purple-500/20', btn: 'bg-purple-600 hover:bg-purple-500' },
-    manager: { accent: 'text-amber-400',  border: 'border-amber-500/40',  bg: 'bg-amber-500/20',  btn: 'bg-amber-600 hover:bg-amber-500'  },
+    triage:  { accent: 'text-green-600',  border: 'border-green-400/40',  bg: 'bg-green-100',  btn: 'bg-green-600 hover:bg-green-500'   },
+    doctor:  { accent: 'text-emerald-600',border: 'border-emerald-400/40',bg: 'bg-emerald-100',btn: 'bg-emerald-600 hover:bg-emerald-500' },
+    manager: { accent: 'text-teal-600',   border: 'border-teal-400/40',   bg: 'bg-teal-100',   btn: 'bg-teal-600 hover:bg-teal-500'     },
   }[role] || {};
 
   const roleLabel = { triage: 'Nurse', doctor: 'Doctor', manager: 'Manager' }[role];
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#2c3038]">
-      <div className="dashboard-card w-full max-w-md p-10 text-white">
+    <div className="min-h-screen flex items-center justify-center bg-[#f0faf4]">
+      <div className="dashboard-card w-full max-w-md p-10 text-[#1a3a2a]">
 
-        <button onClick={onBack} className="text-gray-500 mb-6 flex items-center gap-1 text-xs uppercase font-bold hover:text-white transition-colors">
+        <button onClick={onBack} className="text-gray-400 mb-6 flex items-center gap-1 text-xs uppercase font-bold hover:text-green-700 transition-colors">
           <ArrowLeft size={14}/> Back
         </button>
 
@@ -39,8 +39,8 @@ export const LoginScreen = ({ role, onLogin, onBack, authError, authLoading }) =
             {role === 'doctor'  && <Stethoscope size={32}/>}
             {role === 'manager' && <BarChart3 size={32}/>}
           </div>
-          <h2 className="text-xl font-bold uppercase tracking-widest">{roleLabel} Registration</h2>
-          <p className="text-gray-500 text-xs mt-1 tracking-widest uppercase">Secure Authentication</p>
+          <h2 className="text-xl font-bold uppercase tracking-widest text-[#1a3a2a]">{roleLabel} Registration</h2>
+          <p className="text-gray-400 text-xs mt-1 tracking-widest uppercase">Secure Authentication</p>
         </div>
 
         {error && (
@@ -52,7 +52,7 @@ export const LoginScreen = ({ role, onLogin, onBack, authError, authLoading }) =
 
         <div className="space-y-4">
           <div>
-            <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block ml-1">Username</label>
+          <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block ml-1">Username</label>
             <input
               className="form-input"
               placeholder="Enter your username"

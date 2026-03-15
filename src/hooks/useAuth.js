@@ -82,8 +82,8 @@ export function useAuth() {
         .select('id, username, password, role, full_name').eq('username', username).limit(1);
 
       const user          = users?.[0];
-      const dummyHash     = '$2a$12$invalidhashfortimingprotectiononly000000000000000000000';
-      const passwordMatch = await bcrypt.compare(password, user?.password ?? dummyHash);
+      const dummyHash     = '$2a$12$invalidhashfortimingprotectiononly000000000000000000000'; /* Dummy hash for timing protection */
+      const passwordMatch = await bcrypt.compare(password, user?.password ?? dummyHash);/* Comparing the hashes  */
 
       if (!user || !passwordMatch || user.role !== role) {
         await supabase.from('login_attempts').insert({ username, success: false });

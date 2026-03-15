@@ -1,13 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap');
 
 :root {
-  --bg-dark: #2c3038;
-  --bg-light: #353a43;
-  --text-primary: #e0e0e0;
-  --accent-blue: #4a90e2;
-  --border: rgba(255, 255, 255, 0.1);
-  --shadow-dark: rgba(0, 0, 0, 0.4);
-  --shadow-light: rgba(255, 255, 255, 0.03);
+  --bg-dark: #f0faf4;
+  --bg-light: #ffffff;
+  --text-primary: #1a3a2a;
+  --accent-green: #22c55e;
+  --accent-green-dark: #16a34a;
+  --border: rgba(34, 197, 94, 0.18);
+  --shadow-dark: rgba(0, 80, 30, 0.10);
+  --shadow-light: rgba(255, 255, 255, 0.85);
 }
 
 body {
@@ -17,49 +18,60 @@ body {
   margin: 0;
 }
 
-.dashboard-card {
-  background: linear-gradient(145deg, var(--bg-light), var(--bg-dark));
-  box-shadow: 8px 8px 16px var(--shadow-dark), -4px -4px 12px var(--shadow-light);
+.dashboard-card { /*Emerging the new layout*/
+  background: linear-gradient(145deg, var(--bg-light), #f0faf4);
+  box-shadow: 6px 6px 16px var(--shadow-dark), -3px -3px 10px var(--shadow-light);
   border-radius: 1.5rem;
   border: 1px solid var(--border);
 }
 
 .form-input {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--border);
-  color: white;
+  background: rgba(240, 250, 244, 0.9);
+  border: 1.5px solid rgba(34, 197, 94, 0.25);
+  color: #1a3a2a;
   padding: 0.8rem 1rem;
   border-radius: 0.75rem;
   outline: none;
   width: 100%;
-  transition: border-color 0.3s;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  font-family: 'Poppins', sans-serif;
+}
+
+.form-input::placeholder {
+  color: #9ca3af;
 }
 
 .form-input:focus {
-  border-color: var(--accent-blue);
+  border-color: var(--accent-green);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+}
+
+select.form-input option {
+  background: #ffffff;
+  color: #1a3a2a;
 }
 
 /* HIGH CONTRAST ACCESSIBILITY BADGES */
 .urgency-critical {
-  background-color: rgba(127, 29, 29, 0.7); /* Deep Dark Red */
-  border: 2px solid #f87171;
-  color: #ffffff;
+  background-color: rgba(254, 226, 226, 0.8);
+  border: 2px solid #ef4444;
+  color: #b91c1c;
 }
 
 .urgency-high {
-  background-color: rgba(120, 53, 15, 0.7); /* Deep Dark Amber */
-  border: 2px solid #fbbf24;
-  color: #ffffff;
+  background-color: rgba(254, 243, 199, 0.8);
+  border: 2px solid #f59e0b;
+  color: #b45309;
 }
 
 .urgency-medium {
-  background-color: rgba(30, 58, 138, 0.7); /* Deep Dark Blue */
-  border: 2px solid #60a5fa;
-  color: #ffffff;
+  background-color: rgba(219, 234, 254, 0.8);
+  border: 2px solid #3b82f6;
+  color: #1d4ed8;
 }
 
 .urgency-low {
-  background-color: rgba(6, 78, 59, 0.7); /* Deep Dark Green */
-  border: 2px solid #34d399;
-  color: #ffffff;
+  background-color: rgba(220, 252, 231, 0.8);
+  border: 2px solid #22c55e;
+  color: #15803d;
 }

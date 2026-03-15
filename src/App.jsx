@@ -86,8 +86,8 @@ function App() {
     return <RoleSelectionScreen onSelect={handleRoleSelection}/>;
 
   if (viewMode === 'patient-intake') return (
-    <div style={{ minHeight:'100vh', background:'#2c3038', padding:'2rem', fontFamily:'Poppins, sans-serif' }}>
-      <button onClick={() => setViewMode('landing')} style={{ background:'none', border:'none', color:'#22c55e', cursor:'pointer', display:'flex', alignItems:'center', gap:8, fontWeight:700, fontSize:'11px', textTransform:'uppercase', letterSpacing:'0.15em', marginBottom:'1.5rem', padding:0 }}>
+    <div style={{ minHeight:'100vh', background:'#f0faf4', padding:'2rem', fontFamily:'Poppins, sans-serif' }}>
+      <button onClick={() => setViewMode('landing')} style={{ background:'none', border:'none', color:'#16a34a', cursor:'pointer', display:'flex', alignItems:'center', gap:8, fontWeight:700, fontSize:'11px', textTransform:'uppercase', letterSpacing:'0.15em', marginBottom:'1.5rem', padding:0 }}>
         <ArrowLeft size={16}/> Back
       </button>
       <PatientIntakeForm formData={formData} setFormData={setFormData} addPatient={addPatient}/>
@@ -105,17 +105,17 @@ function App() {
 
   // Dashboard
   return (
-    <div style={{ display:'flex', minHeight:'100vh', background:'#2c3038', fontFamily:'Poppins, sans-serif' }}>
+    <div style={{ display:'flex', minHeight:'100vh', background:'#f0faf4', fontFamily:'Poppins, sans-serif' }}>
 
       {/* TIMEOUT WARNING MODAL */}
       {showTimeout && (
         <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.7)', zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center' }}>
-          <div style={{ background:'#353a43', borderRadius:'1.5rem', border:'1px solid rgba(245,158,11,0.4)', padding:'2.5rem', maxWidth:'400px', width:'90%', textAlign:'center', boxShadow:'0 20px 60px rgba(0,0,0,0.5)' }}>
+          <div style={{ background:'#ffffff', borderRadius:'1.5rem', border:'1px solid rgba(34,197,94,0.3)', padding:'2.5rem', maxWidth:'400px', width:'90%', textAlign:'center', boxShadow:'0 20px 60px rgba(0,80,30,0.15)' }}>
             <div style={{ width:64, height:64, borderRadius:'50%', background:'rgba(245,158,11,0.15)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 1.5rem', color:'#f59e0b' }}>
               <Clock size={32}/>
             </div>
-            <h3 style={{ color:'white', fontWeight:900, fontSize:'1.2rem', margin:'0 0 8px', textTransform:'uppercase' }}>Session Expiring</h3>
-            <p style={{ color:'#9ca3af', fontSize:'13px', margin:'0 0 1.5rem' }}>You will be logged out due to inactivity in</p>
+            <h3 style={{ color:'#1a3a2a', fontWeight:900, fontSize:'1.2rem', margin:'0 0 8px', textTransform:'uppercase' }}>Session Expiring</h3>
+            <p style={{ color:'#6b7280', fontSize:'13px', margin:'0 0 1.5rem' }}>You will be logged out due to inactivity in</p>
             <div style={{ fontSize:'3rem', fontWeight:900, color: timeoutSeconds <= 30 ? '#ef4444' : '#f59e0b', marginBottom:'1.5rem' }}>
               {Math.floor(timeoutSeconds/60)}:{(timeoutSeconds%60).toString().padStart(2,'0')}
             </div>
@@ -128,16 +128,16 @@ function App() {
       )}
 
       {/* SIDEBAR */}
-      <aside style={{ width:'260px', background:'#353a43', borderRight:'1px solid rgba(255,255,255,0.05)', display:'flex', flexDirection:'column', padding:'1.5rem', position:'sticky', top:0, height:'100vh' }}>
+      <aside style={{ width:'260px', background:'#ffffff', borderRight:'1px solid rgba(34,197,94,0.15)', display:'flex', flexDirection:'column', padding:'1.5rem', position:'sticky', top:0, height:'100vh', boxShadow:'2px 0 12px rgba(0,80,30,0.06)' }}>
         <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', marginBottom:'3rem', paddingLeft:'0.5rem' }}>
           <Activity color={getAccentColor()} size={26}/>
           <div>
-            <h1 style={{ fontWeight:900, fontSize:'1.1rem', fontStyle:'italic', letterSpacing:'-1px', color:'white', margin:0, lineHeight:1 }}>HEALTHFLOW</h1>
+            <h1 style={{ fontWeight:900, fontSize:'1.1rem', fontStyle:'italic', letterSpacing:'-1px', color:'#1a3a2a', margin:0, lineHeight:1 }}>HEALTHFLOW</h1>
             <p style={{ fontSize:'9px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.2em', color:getAccentColor(), margin:'4px 0 0' }}>{currentUser?.role}</p>
           </div>
         </div>
         <nav style={{ flex:1 }}>
-          <div style={{ display:'flex', alignItems:'center', gap:'1rem', padding:'0.75rem 1rem', borderRadius:'0.75rem', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.05)', color:getAccentColor(), marginBottom:'0.5rem' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:'1rem', padding:'0.75rem 1rem', borderRadius:'0.75rem', background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.2)', color:getAccentColor(), marginBottom:'0.5rem' }}>
             {getRoleIcon()}
             <span style={{ fontWeight:700, fontSize:'12px', textTransform:'uppercase', letterSpacing:'0.1em' }}>Dashboard</span>
           </div>
@@ -146,14 +146,14 @@ function App() {
             <span style={{ fontWeight:700, fontSize:'12px', textTransform:'uppercase', letterSpacing:'0.1em' }}>Profile</span>
           </div>
         </nav>
-        <div style={{ background:'rgba(0,0,0,0.2)', borderRadius:'0.75rem', padding:'0.75rem', marginBottom:'1rem', display:'flex', alignItems:'center', gap:8 }}>
-          <Clock size={12} color="#4b5563"/>
-          <span style={{ fontSize:'10px', color:'#4b5563', fontWeight:600 }}>Auto-logout: 15 min idle</span>
+        <div style={{ background:'rgba(34,197,94,0.06)', borderRadius:'0.75rem', padding:'0.75rem', marginBottom:'1rem', display:'flex', alignItems:'center', gap:8, border:'1px solid rgba(34,197,94,0.12)' }}>
+          <Clock size={12} color="#16a34a"/>
+          <span style={{ fontSize:'10px', color:'#4b7a5a', fontWeight:600 }}>Auto-logout: 15 min idle</span>
         </div>
-        <div style={{ borderTop:'1px solid rgba(255,255,255,0.05)', paddingTop:'1.5rem' }}>
+        <div style={{ borderTop:'1px solid rgba(34,197,94,0.15)', paddingTop:'1.5rem' }}>
           <div style={{ marginBottom:'1rem', paddingLeft:'0.5rem' }}>
-            <p style={{ color:'#4b5563', fontSize:'10px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.15em', margin:'0 0 4px' }}>Active User</p>
-            <p style={{ color:'white', fontWeight:700, fontSize:'13px', margin:0, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{currentUser?.fullName}</p>
+            <p style={{ color:'#6b7280', fontSize:'10px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.15em', margin:'0 0 4px' }}>Active User</p>
+            <p style={{ color:'#1a3a2a', fontWeight:700, fontSize:'13px', margin:0, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{currentUser?.fullName}</p>
           </div>
           <button onClick={handleLogout} style={{ width:'100%', display:'flex', alignItems:'center', justifyContent:'center', gap:'0.75rem', padding:'0.75rem', borderRadius:'0.75rem', background:'rgba(239,68,68,0.1)', color:'#f87171', border:'1px solid rgba(239,68,68,0.2)', cursor:'pointer', fontWeight:700, fontSize:'11px', textTransform:'uppercase', letterSpacing:'0.1em' }}>
             <LogOut size={16}/> Logout

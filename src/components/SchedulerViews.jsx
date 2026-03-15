@@ -37,12 +37,12 @@ const UrgencyBadge = ({ urgency }) => {
 
 // ─── ROLE SELECTION ───────────────────────────────────────────────────────────
 export const RoleSelectionScreen = ({ onSelect }) => (
-  <div className="min-h-screen flex flex-col justify-center bg-[#8395ac]">
+  <div className="min-h-screen flex flex-col justify-center bg-[#f0faf4]">
     <div className="text-center mb-12 w-full">
-      <h2 className="text-5xl font-black text-white italic tracking-tighter">
-        HEALTH<span className="text-blue-500">FLOW</span>
+      <h2 className="text-5xl font-black text-[#1a3a2a] italic tracking-tighter">
+        HEALTH<span className="text-green-600">FLOW</span>
       </h2>
-      <p className="text-gray-500 uppercase text-[10px] tracking-[0.5em] mt-4 font-bold">
+      <p className="text-green-600/60 uppercase text-[10px] tracking-[0.5em] mt-4 font-bold">
         Priority Triage System
       </p>
     </div>
@@ -50,17 +50,17 @@ export const RoleSelectionScreen = ({ onSelect }) => (
       {/* Left — role buttons */}
       <div className="flex flex-col gap-6 items-start">
         {[
-          { id: 'patient', label: 'Patient', icon: <User />,        color: 'text-green-400'  },
-          { id: 'triage',  label: 'Nurse',   icon: <Activity />,    color: 'text-blue-400'   },
-          { id: 'doctor',  label: 'Doctor',  icon: <Stethoscope />, color: 'text-purple-400' },
-          { id: 'manager', label: 'Manager', icon: <BarChart3 />,   color: 'text-amber-400'  },
+          { id: 'patient', label: 'Patient', icon: <User />,        color: 'text-green-600'   },
+          { id: 'triage',  label: 'Nurse',   icon: <Activity />,    color: 'text-emerald-600' },
+          { id: 'doctor',  label: 'Doctor',  icon: <Stethoscope />, color: 'text-teal-600'    },
+          { id: 'manager', label: 'Manager', icon: <BarChart3 />,   color: 'text-green-700'   },
         ].map(role => (
           <button
             key={role.id}
             onClick={() => onSelect(role.id)}
-            className="dashboard-card w-75 h-33 flex flex-col items-center justify-center gap-5 hover:border-blue-500 transition-all text-white group"
+            className="dashboard-card w-75 h-33 flex flex-col items-center justify-center gap-5 hover:border-green-500 transition-all text-[#1a3a2a] group"
           >
-            <div className={`p-5 bg-white rounded-3xl transition-colors group-hover:bg-blue-500 group-hover:text-black ${role.color}`}>
+            <div className={`p-5 bg-green-50 rounded-3xl transition-colors group-hover:bg-green-500 group-hover:text-white ${role.color}`}>
               {role.icon}
             </div>
             <span className="font-bold tracking-widest text-xs uppercase">{role.label} PORTAL</span>
@@ -70,10 +70,10 @@ export const RoleSelectionScreen = ({ onSelect }) => (
 
       {/* Right — welcome panel */}
       <div className="flex flex-col justify-start flex-1">
-        <div className="dashboard-card p-10 w-full text-white h-[600px] flex flex-col">
+        <div className="dashboard-card p-10 w-full text-[#1a3a2a] h-[600px] flex flex-col">
           <center>
             <h1 className="text-4xl font-bold mb-4">WELCOME!</h1>
-            <p className="text-white-400 text-sm">
+            <p className="text-green-600/60 text-sm">
               Users
             </p>
           </center>
@@ -85,43 +85,43 @@ export const RoleSelectionScreen = ({ onSelect }) => (
 
 // ─── QUEUE TICKET INLINE ──────────────────────────────────────────────────────
 const QueueTicketInline = ({ patient, onBack }) => (
-  <div className="min-h-screen flex flex-col items-center justify-center bg-[#2c3038] p-8">
+  <div className="min-h-screen flex flex-col items-center justify-center bg-[#f0faf4] p-8">
     <div className="text-center mb-8">
-      <h2 className="text-3xl font-black text-white italic tracking-tighter">HEALTH<span className="text-blue-500">FLOW</span></h2>
-      <p className="text-gray-500 uppercase text-[10px] tracking-[0.3em] mt-2 font-bold">Registration Confirmed</p>
+      <h2 className="text-3xl font-black text-[#1a3a2a] italic tracking-tighter">HEALTH<span className="text-green-600">FLOW</span></h2>
+      <p className="text-green-600/60 uppercase text-[10px] tracking-[0.3em] mt-2 font-bold">Registration Confirmed</p>
     </div>
     <div className="dashboard-card w-full max-w-sm overflow-hidden p-0">
       <div className="bg-green-500 py-2 text-center">
         <span className="text-white font-black text-[11px] uppercase tracking-widest">You are now in the queue</span>
       </div>
-      <div className="p-8 text-white">
+      <div className="p-8 text-[#1a3a2a]">
         <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 rounded-full bg-green-500/10 border-2 border-green-500/30 flex items-center justify-center">
-            <CheckCircle className="text-green-400" size={32} />
+          <div className="w-16 h-16 rounded-full bg-green-100 border-2 border-green-400/40 flex items-center justify-center">
+            <CheckCircle className="text-green-600" size={32} />
           </div>
         </div>
         <div className="text-center mb-6">
           <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-1">Registered Patient</p>
-          <h2 className="text-3xl font-black">{patient.fullname}</h2>
+          <h2 className="text-3xl font-black text-[#1a3a2a]">{patient.fullname}</h2>
         </div>
-        <div className="text-center border-2 border-dashed border-blue-500/25 rounded-2xl p-6 mb-4">
+        <div className="text-center border-2 border-dashed border-green-400/40 rounded-2xl p-6 mb-4 bg-green-50">
           <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 mb-2">Your Queue Number</p>
-          <div className="text-6xl font-black text-blue-500 leading-none">#{patient.ticket_number || '—'}</div>
-          <p className="text-gray-600 text-[11px] mt-2">Remember this number</p>
+          <div className="text-6xl font-black text-green-600 leading-none">#{patient.ticket_number || '—'}</div>
+          <p className="text-gray-500 text-[11px] mt-2">Remember this number</p>
         </div>
-        <div className="flex items-start gap-3 bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-3">
-          <Clock size={16} className="text-amber-400 shrink-0 mt-0.5" />
+        <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4 mb-3">
+          <Clock size={16} className="text-amber-500 shrink-0 mt-0.5" />
           <div>
-            <p className="text-amber-400 text-xs font-bold uppercase mb-1">Awaiting Assessment</p>
-            <p className="text-gray-500 text-[11px] leading-relaxed">A nurse will assess your condition and assign your priority. Please remain in the waiting area.</p>
+            <p className="text-amber-600 text-xs font-bold uppercase mb-1">Awaiting Assessment</p>
+            <p className="text-amber-700/70 text-[11px] leading-relaxed">A nurse will assess your condition and assign your priority. Please remain in the waiting area.</p>
           </div>
         </div>
-        <div className="bg-blue-500/10 border border-blue-500/15 rounded-xl p-4 mb-6">
-          <p className="text-blue-400 text-xs font-bold uppercase mb-1">Queue Monitor</p>
-          <p className="text-gray-500 text-[11px] leading-relaxed">Watch the waiting room display screen to track your queue position.</p>
+        <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
+          <p className="text-green-600 text-xs font-bold uppercase mb-1">Queue Monitor</p>
+          <p className="text-green-700/60 text-[11px] leading-relaxed">Watch the waiting room display screen to track your queue position.</p>
         </div>
         <button onClick={onBack}
-          className="w-full flex items-center justify-center gap-2 border border-white/10 text-gray-500 hover:text-white py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-colors">
+          className="w-full flex items-center justify-center gap-2 border border-green-200 text-green-600 hover:bg-green-50 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-colors">
           <ArrowLeft size={14} /> Back to Home
         </button>
       </div>
@@ -135,21 +135,35 @@ export const PatientIntakeForm = ({ formData, setFormData, addPatient: addPatien
   const [submitting, setSubmitting] = React.useState(false);
   const [submitted,  setSubmitted]  = React.useState(false);
   const [ticket,     setTicket]     = React.useState(null);
+  const [errors,     setErrors]     = React.useState({});
 
   const form    = formData || localForm;
   const setForm = setFormData || setLocalForm;
 
+  const validate = () => {
+    const newErrors = {};
+    if (!form.fullname.trim())          newErrors.fullname  = 'Full name is required.';
+    if (!form.dob)                      newErrors.dob       = 'Date of birth is required.';
+    if (!form.gender)                   newErrors.gender    = 'Gender is required.';
+    if (!form.phone.trim())             newErrors.phone     = 'Phone number is required.';
+    else if (!/^\d{11}$/.test(form.phone.trim())) newErrors.phone = 'Phone number must be exactly 11 digits (numbers only).';
+    if (!form.condition.trim())         newErrors.condition = 'Condition / symptoms is required.';
+    return newErrors;
+  };
+
   const handleSubmit = async () => {
-    if (!form.fullname || !form.condition) return alert('Please fill in Name and Condition.');
+    const newErrors = validate();
+    if (Object.keys(newErrors).length > 0) { setErrors(newErrors); return; }
+    setErrors({});
     setSubmitting(true);
     try {
       const sb = await getSupabase();
       const { data, error } = await sb.from('patients').insert({
-        fullname:     form.fullname,
-        dob:          form.dob     || null,
-        gender:       form.gender  || null,
-        phone:        form.phone   || null,
-        condition:    form.condition,
+        fullname:     form.fullname.trim(),
+        dob:          form.dob,
+        gender:       form.gender,
+        phone:        form.phone.trim(),
+        condition:    form.condition.trim(),
         urgency:      'medium',
         arrival_time: new Date().toISOString(),
       }).select().single();
@@ -163,6 +177,13 @@ export const PatientIntakeForm = ({ formData, setFormData, addPatient: addPatien
     } finally { setSubmitting(false); }
   };
 
+  // Only allow digits in phone field
+  const handlePhoneChange = (e) => {
+    const val = e.target.value.replace(/[^0-9]/g, '').slice(0, 11);
+    setForm({...form, phone: val});
+    if (errors.phone) setErrors({...errors, phone: ''});
+  };
+
   if (submitted && ticket) return (
     <QueueTicketInline patient={ticket} onBack={() => {
       setSubmitted(false); setTicket(null);
@@ -170,37 +191,80 @@ export const PatientIntakeForm = ({ formData, setFormData, addPatient: addPatien
     }}/>
   );
 
+  const FieldError = ({ field }) => errors[field]
+    ? <p className="text-red-500 text-[11px] mt-1 ml-2 font-semibold">⚠ {errors[field]}</p>
+    : null;
+
   return (
-    <div className="max-w-2xl mx-auto dashboard-card p-10 text-white">
-      <h2 className="text-2xl font-bold mb-8 flex items-center gap-3 border-b border-white/5 pb-4">
-        <ClipboardList className="text-blue-500"/> Patient Registration
+    <div className="max-w-2xl mx-auto dashboard-card p-10 text-[#1a3a2a]">
+      <h2 className="text-2xl font-bold mb-8 flex items-center gap-3 border-b border-green-100 pb-4 text-[#1a3a2a]">
+        <ClipboardList className="text-green-600"/> Patient Registration
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
         <div className="md:col-span-2">
-          <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block ml-2">Full Name *</label>
-          <input className="form-input" placeholder="Full name" value={form.fullname} onChange={e => setForm({...form, fullname: e.target.value})}/>
+          <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block ml-2">Full Name <span className="text-red-500">*</span></label>
+          <input
+            className={`form-input ${errors.fullname ? 'border-red-400' : ''}`}
+            placeholder="Full name"
+            value={form.fullname}
+            onChange={e => { setForm({...form, fullname: e.target.value}); if(errors.fullname) setErrors({...errors, fullname:''}); }}
+          />
+          <FieldError field="fullname"/>
         </div>
         <div>
-          <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block ml-2">Date of Birth</label>
-          <input type="date" className="form-input" value={form.dob} onChange={e => setForm({...form, dob: e.target.value})}/>
+          <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block ml-2">Date of Birth <span className="text-red-500">*</span></label>
+          <input
+            type="date"
+            className={`form-input ${errors.dob ? 'border-red-400' : ''}`}
+            value={form.dob}
+            onChange={e => { setForm({...form, dob: e.target.value}); if(errors.dob) setErrors({...errors, dob:''}); }}
+          />
+          <FieldError field="dob"/>
         </div>
         <div>
-          <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block ml-2">Gender</label>
-          <select className="form-input" value={form.gender} onChange={e => setForm({...form, gender: e.target.value})}>
+          <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block ml-2">Gender <span className="text-red-500">*</span></label>
+          <select
+            className={`form-input ${errors.gender ? 'border-red-400' : ''}`}
+            value={form.gender}
+            onChange={e => { setForm({...form, gender: e.target.value}); if(errors.gender) setErrors({...errors, gender:''}); }}
+          >
             <option value="">Select</option>
             <option>Male</option>
             <option>Female</option>
           </select>
+          <FieldError field="gender"/>
         </div>
       </div>
       <div className="space-y-5">
-        <input className="form-input" placeholder="Phone Number" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})}/>
         <div>
-          <label className="text-[10px] uppercase font-bold text-blue-500 mb-1 block ml-2">Condition / Symptoms *</label>
-          <textarea className="form-input h-32" placeholder="Describe your condition..." value={form.condition} onChange={e => setForm({...form, condition: e.target.value})}/>
+          <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block ml-2">Phone Number <span className="text-red-500">*</span></label>
+          <input
+            className={`form-input ${errors.phone ? 'border-red-400' : ''}`}
+            placeholder="09XXXXXXXXX (11 digits)"
+            value={form.phone}
+            onChange={handlePhoneChange}
+            maxLength={11}
+            inputMode="numeric"
+          />
+          <div className="flex justify-between items-center mt-1 ml-2">
+            <FieldError field="phone"/>
+            <span className={`text-[11px] font-semibold ml-auto ${form.phone.length === 11 ? 'text-green-500' : 'text-gray-400'}`}>
+              {form.phone.length}/11
+            </span>
+          </div>
+        </div>
+        <div>
+          <label className="text-[10px] uppercase font-bold text-green-600 mb-1 block ml-2">Condition / Symptoms <span className="text-red-500">*</span></label>
+          <textarea
+            className={`form-input h-32 ${errors.condition ? 'border-red-400' : ''}`}
+            placeholder="Describe your condition..."
+            value={form.condition}
+            onChange={e => { setForm({...form, condition: e.target.value}); if(errors.condition) setErrors({...errors, condition:''}); }}
+          />
+          <FieldError field="condition"/>
         </div>
         <button onClick={handleSubmit} disabled={submitting}
-          className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-60 p-4 rounded-xl font-bold transition-all shadow-lg flex items-center justify-center gap-2">
+          className="w-full bg-green-600 hover:bg-green-500 disabled:opacity-60 p-4 rounded-xl font-bold transition-all shadow-lg flex items-center justify-center gap-2 text-white">
           {submitting ? <><Loader2 size={16} className="animate-spin"/> Submitting...</> : 'SUBMIT & JOIN QUEUE'}
         </button>
       </div>
@@ -218,10 +282,10 @@ export const LoginScreen = ({ role, onLogin, onBack, authError, authLoading }) =
   const error = localErr || authError;
 
   const THEME = {
-    triage:  { color: 'text-blue-400',   Icon: Activity    },
-    doctor:  { color: 'text-purple-400', Icon: Stethoscope },
-    manager: { color: 'text-amber-400',  Icon: BarChart3   },
-  }[role] || { color: 'text-blue-400', Icon: Activity };
+    triage:  { color: 'text-green-600',  Icon: Activity    },
+    doctor:  { color: 'text-emerald-600',Icon: Stethoscope },
+    manager: { color: 'text-teal-600',   Icon: BarChart3   },
+  }[role] || { color: 'text-green-600', Icon: Activity };
 
   const roleLabel = { triage: 'Nurse', doctor: 'Doctor', manager: 'Manager' }[role];
 
@@ -271,17 +335,17 @@ export const LoginScreen = ({ role, onLogin, onBack, authError, authLoading }) =
   const isLoading = loading || authLoading;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#2c3038]">
-      <div className="dashboard-card w-full max-w-md p-10 text-white">
-        <button onClick={onBack} className="text-gray-500 mb-6 flex items-center gap-1 text-xs uppercase font-bold hover:text-white">
+    <div className="min-h-screen flex items-center justify-center bg-[#f0faf4]">
+      <div className="dashboard-card w-full max-w-md p-10 text-[#1a3a2a]">
+        <button onClick={onBack} className="text-gray-400 mb-6 flex items-center gap-1 text-xs uppercase font-bold hover:text-green-700">
           <ArrowLeft size={14}/> BACK
         </button>
         <div className="text-center mb-8">
-          <div className={`inline-block p-4 bg-white/5 rounded-2xl mb-4 ${THEME.color}`}>
+          <div className={`inline-block p-4 bg-green-50 rounded-2xl mb-4 ${THEME.color}`}>
             <THEME.Icon size={32}/>
           </div>
-          <h2 className="text-xl font-bold uppercase tracking-widest">{roleLabel} Authentication</h2>
-          <p className="text-gray-500 text-[10px] uppercase tracking-[0.2em] mt-1">Secure Access</p>
+          <h2 className="text-xl font-bold uppercase tracking-widest text-[#1a3a2a]">{roleLabel} Authentication</h2>
+          <p className="text-gray-400 text-[10px] uppercase tracking-[0.2em] mt-1">Secure Access</p>
         </div>
 
         {error && (
@@ -307,7 +371,7 @@ export const LoginScreen = ({ role, onLogin, onBack, authError, authLoading }) =
             </button>
           </div>
           <button onClick={handleSubmit} disabled={isLoading}
-            className="w-full bg-blue-500 hover:bg-blue-600 disabled:opacity-60 p-4 rounded-xl font-bold transition-all uppercase flex items-center justify-center gap-2">
+            className="w-full bg-green-600 hover:bg-green-500 disabled:opacity-60 text-white p-4 rounded-xl font-bold transition-all uppercase flex items-center justify-center gap-2">
             {isLoading
               ? <><Loader2 size={16} className="animate-spin"/> Verifying...</>
               : <><ShieldCheck size={16}/> Enter Portal</>}
@@ -376,10 +440,10 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
       (p.fullname.toLowerCase().includes(search.toLowerCase()) || p.condition.toLowerCase().includes(search.toLowerCase())));
 
   return (
-    <div className="p-8 text-white">
+    <div className="p-8 text-[#1a3a2a]">
       <div className="mb-6">
-        <h2 className="text-2xl font-black text-white">Triage Dashboard</h2>
-        <p className="text-gray-500 text-[10px] uppercase tracking-[0.3em] font-bold mt-1">Manage Patient Urgency Levels</p>
+        <h2 className="text-2xl font-black text-[#1a3a2a]">Triage Dashboard</h2>
+        <p className="text-green-600/60 text-[10px] uppercase tracking-[0.3em] font-bold mt-1">Manage Patient Urgency Levels</p>
       </div>
 
       {/* Stats */}
@@ -420,7 +484,7 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
       {/* Queue */}
       <div className="dashboard-card p-8">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-white font-black text-xs uppercase tracking-widest">Live Priority Queue</h3>
+          <h3 className="text-[#1a3a2a] font-black text-xs uppercase tracking-widest">Live Priority Queue</h3>
           <div className="animate-pulse flex items-center gap-2">
             <div className="w-2 h-2 bg-red-500 rounded-full"/>
             <span className="text-[10px] font-bold text-gray-400 tracking-widest">LIVE MONITOR</span>
@@ -432,22 +496,22 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
                 {search || filter !== 'all' ? 'No patients match your filter' : 'No Active Patients'}
               </div>
             : sorted.map((p, i) => (
-              <div key={p.id} className="p-5 bg-black/20 rounded-2xl border border-white/5 flex justify-between items-center gap-4">
+              <div key={p.id} className="p-5 bg-green-50/60 rounded-2xl border border-green-100 flex justify-between items-center gap-4">
                 <div className="flex items-center gap-5 flex-1 min-w-0">
-                  <div className="text-2xl font-black text-white/20 shrink-0">{(i+1).toString().padStart(2,'0')}</div>
+                  <div className="text-2xl font-black text-green-200 shrink-0">{(i+1).toString().padStart(2,'0')}</div>
                   <div className="min-w-0">
-                    <p className="font-bold text-white text-lg truncate">{p.fullname}</p>
-                    <p className="text-sm text-gray-500 italic truncate">"{p.condition}"</p>
-                    <p className="text-gray-600 text-[11px] mt-1 flex items-center gap-1">
+                    <p className="font-bold text-[#1a3a2a] text-lg truncate">{p.fullname}</p>
+                    <p className="text-sm text-gray-400 italic truncate">"{p.condition}"</p>
+                    <p className="text-gray-400 text-[11px] mt-1 flex items-center gap-1">
                       <Clock size={10}/> {timeAgo(p.arrival_time)}
                     </p>
                   </div>
                 </div>
                 <div className="shrink-0">
                   {updating === p.id
-                    ? <Loader2 size={16} className="text-gray-500 animate-spin"/>
+                    ? <Loader2 size={16} className="text-green-400 animate-spin"/>
                     : <select value={p.urgency} onChange={e => updateUrgency(p.id, e.target.value)}
-                        className="bg-black/30 border border-white/10 text-white px-3 py-2 rounded-lg font-bold text-[11px] uppercase cursor-pointer">
+                        className="bg-white border border-green-200 text-[#1a3a2a] px-3 py-2 rounded-lg font-bold text-[11px] uppercase cursor-pointer">
                         <option value="low">Low</option>
                         <option value="medium">Medium</option>
                         <option value="high">High</option>
@@ -531,10 +595,10 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
   };
 
   return (
-    <div className="p-8 text-white">
+    <div className="p-8 text-[#1a3a2a]">
       <div className="mb-6">
-        <h2 className="text-2xl font-black text-white">Doctor Dashboard</h2>
-        <p className="text-gray-500 text-[10px] uppercase tracking-[0.3em] font-bold mt-1">Patient Consultation Queue</p>
+        <h2 className="text-2xl font-black text-[#1a3a2a]">Doctor Dashboard</h2>
+        <p className="text-green-600/60 text-[10px] uppercase tracking-[0.3em] font-bold mt-1">Patient Consultation Queue</p>
       </div>
 
       {/* Tabs */}
@@ -542,7 +606,7 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
         {[{ id:'queue', label:'Queue' }, { id:'history', label:'History' }].map(t => (
           <button key={t.id} onClick={() => setTab(t.id)}
             className={`px-5 py-2 rounded-xl font-black text-[11px] uppercase tracking-widest transition-all ${
-              tab === t.id ? 'bg-purple-500 text-white' : 'bg-white/5 text-gray-400 hover:text-white'
+              tab === t.id ? 'bg-emerald-500 text-white' : 'bg-green-50 text-gray-400 hover:text-green-700'
             }`}>
             {t.label}
           </button>
@@ -553,16 +617,16 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Current patient */}
           <div className="dashboard-card p-10 text-center">
-            <div className="p-6 bg-purple-500/10 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
-              <Stethoscope className="text-purple-500" size={40}/>
+            <div className="p-6 bg-emerald-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+              <Stethoscope className="text-emerald-600" size={40}/>
             </div>
-            <h3 className="text-gray-500 uppercase text-xs font-black tracking-widest mb-2">Now Consulting</h3>
+            <h3 className="text-gray-400 uppercase text-xs font-black tracking-widest mb-2">Now Consulting</h3>
             {current ? (
               <>
-                <h2 className="text-4xl font-bold text-white mb-3">{current.fullname}</h2>
+                <h2 className="text-4xl font-bold text-[#1a3a2a] mb-3">{current.fullname}</h2>
                 <UrgencyBadge urgency={current.urgency}/>
-                <div className="p-4 bg-black/30 rounded-xl text-gray-400 text-sm my-4 italic">"{current.condition}"</div>
-                <p className="text-gray-600 text-xs mb-5 flex items-center justify-center gap-1">
+                <div className="p-4 bg-green-50 border border-green-100 rounded-xl text-gray-500 text-sm my-4 italic">"{current.condition}"</div>
+                <p className="text-gray-400 text-xs mb-5 flex items-center justify-center gap-1">
                   <Clock size={12}/> Waiting {timeAgo(current.arrival_time)}
                 </p>
                 <div className="text-left mb-4">
@@ -583,20 +647,20 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
 
           {/* Queue list */}
           <div className="dashboard-card p-8">
-            <h3 className="text-white font-black text-xs uppercase tracking-widest mb-4">Up Next ({queue.length})</h3>
+            <h3 className="text-[#1a3a2a] font-black text-xs uppercase tracking-widest mb-4">Up Next ({queue.length})</h3>
             <div className="space-y-3 max-h-96 overflow-y-auto">
               {queue.map((p, i) => (
-                <div key={p.id} className="p-4 bg-black/20 rounded-2xl border border-white/5 flex items-center justify-between gap-3">
-                  <div className="text-xl font-black text-white/20 shrink-0">{(i+2).toString().padStart(2,'0')}</div>
+                <div key={p.id} className="p-4 bg-green-50 rounded-2xl border border-green-100 flex items-center justify-between gap-3">
+                  <div className="text-xl font-black text-green-200 shrink-0">{(i+2).toString().padStart(2,'0')}</div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white font-bold text-sm truncate">{p.fullname}</p>
-                    <p className="text-gray-500 text-xs italic truncate">"{p.condition}"</p>
+                    <p className="text-[#1a3a2a] font-bold text-sm truncate">{p.fullname}</p>
+                    <p className="text-gray-400 text-xs italic truncate">"{p.condition}"</p>
                   </div>
                   <UrgencyBadge urgency={p.urgency}/>
                 </div>
               ))}
               {queue.length === 0 && (
-                <p className="text-gray-700 text-xs font-bold uppercase text-center py-6 tracking-widest">No patients waiting</p>
+                <p className="text-gray-400 text-xs font-bold uppercase text-center py-6 tracking-widest">No patients waiting</p>
               )}
             </div>
           </div>
@@ -605,8 +669,8 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
 
       {tab === 'history' && (
         <div className="dashboard-card p-8">
-          <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-4">
-            <h3 className="text-white font-black text-xs uppercase tracking-widest">Consultation History</h3>
+          <div className="flex justify-between items-center mb-4 border-b border-green-100 pb-4">
+            <h3 className="text-[#1a3a2a] font-black text-xs uppercase tracking-widest">Consultation History</h3>
             <select className="form-input w-36 text-xs" value={shiftDoc} onChange={e => setShiftDoc(e.target.value)}>
               <option value="today">Today</option>
               <option value="week">This Week</option>
@@ -615,27 +679,27 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
           </div>
           <div className="space-y-3">
             {history.filter(shiftFilterDoc).map(p => (
-              <div key={p.id} className="p-4 bg-black/20 rounded-2xl border border-white/5">
+              <div key={p.id} className="p-4 bg-green-50 rounded-2xl border border-green-100">
                 <div className="flex justify-between items-start">
                   <div className="flex-1 min-w-0">
-                    <p className="text-white font-bold truncate">{p.fullname}</p>
-                    <p className="text-gray-500 text-xs italic truncate">"{p.condition}"</p>
+                    <p className="text-[#1a3a2a] font-bold truncate">{p.fullname}</p>
+                    <p className="text-gray-400 text-xs italic truncate">"{p.condition}"</p>
                   </div>
                   <div className="text-right shrink-0 ml-3">
                     <UrgencyBadge urgency={p.urgency}/>
-                    {p.completed_at && <p className="text-gray-600 text-[11px] mt-1">{timeAgo(p.completed_at)}</p>}
+                    {p.completed_at && <p className="text-gray-400 text-[11px] mt-1">{timeAgo(p.completed_at)}</p>}
                   </div>
                 </div>
                 {p.doctor_notes && (
-                  <div className="bg-purple-500/10 border border-purple-500/25 rounded-lg px-3 py-2 mt-3">
-                    <p className="text-purple-400 text-[10px] font-bold uppercase tracking-widest mb-1">Doctor Notes</p>
-                    <p className="text-purple-200 text-xs">{p.doctor_notes}</p>
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 mt-3">
+                    <p className="text-emerald-600 text-[10px] font-bold uppercase tracking-widest mb-1">Doctor Notes</p>
+                    <p className="text-emerald-700 text-xs">{p.doctor_notes}</p>
                   </div>
                 )}
               </div>
             ))}
             {history.length === 0 && (
-              <p className="text-center text-gray-700 text-xs font-bold uppercase py-8 tracking-widest">No history yet</p>
+              <p className="text-center text-gray-400 text-xs font-bold uppercase py-8 tracking-widest">No history yet</p>
             )}
           </div>
         </div>
@@ -702,7 +766,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
       const sb     = await getSupabase();
       const { data: ex } = await sb.from('users').select('id').eq('username',form.username.trim()).limit(1);
       if (ex?.length > 0) { setError('Username already exists.'); setLoading(false); return; }
-      const hash = await bcrypt.hash(form.password, 12);
+      const hash = await bcrypt.hash(form.password, 12); /* Security: Hash the password */
       const { error: ie } = await sb.from('users').insert({ username:form.username.trim(), password:hash, role:form.role, full_name:form.fullName.trim() });
       if (ie) throw ie;
       const emailjs = await import('@emailjs/browser');
@@ -739,7 +803,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
   filteredByShift.forEach(p=>{ if(uc[p.urgency]!==undefined) uc[p.urgency]++; });
   const total = filteredByShift.length || 1;
 
-  const ROLE_COLOR = { triage:'text-blue-400', doctor:'text-purple-400' };
+  const ROLE_COLOR = { triage:'text-green-600', doctor:'text-emerald-600' };
   const ROLE_LABEL = { triage:'Nurse', doctor:'Doctor', manager:'Manager' };
 
   const filtStaff    = staffList.filter(s=>s.full_name.toLowerCase().includes(search.toLowerCase())||s.username.toLowerCase().includes(search.toLowerCase()));
@@ -749,10 +813,10 @@ export const ManagerView = ({ patients: patientsProp }) => {
   const TAB_LABELS = { overview:'Overview', analytics:'Analytics', patients:'Patient Records', create:'+ Create Account', staff:'Staff List' };
 
   return (
-    <div className="p-8 text-white">
+    <div className="p-8 text-[#1a3a2a]">
       <div className="mb-6">
-        <h2 className="text-2xl font-black text-white">Manager Dashboard</h2>
-        <p className="text-gray-500 text-[10px] uppercase tracking-[0.3em] font-bold mt-1">Staff, Analytics & Patient Overview</p>
+        <h2 className="text-2xl font-black text-[#1a3a2a]">Manager Dashboard</h2>
+        <p className="text-green-600/60 text-[10px] uppercase tracking-[0.3em] font-bold mt-1">Staff, Analytics & Patient Overview</p>
       </div>
 
       {/* Tabs */}
@@ -760,7 +824,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
         {TABS.map(t => (
           <button key={t} onClick={() => { setTab(t); setCreated(null); setError(''); setSearch(''); }}
             className={`px-4 py-2 rounded-xl font-black text-[11px] uppercase tracking-widest transition-all ${
-              tab === t ? 'bg-amber-500 text-black' : 'bg-white/5 text-gray-400 hover:text-white'
+              tab === t ? 'bg-green-600 text-white' : 'bg-green-50 text-gray-400 hover:text-green-700'
             }`}>
             {TAB_LABELS[t]}
           </button>
@@ -771,11 +835,11 @@ export const ManagerView = ({ patients: patientsProp }) => {
       {tab === 'overview' && (
         <div className="flex flex-col gap-6">
           <div className="flex items-center gap-3 flex-wrap">
-            <span className="text-gray-500 text-[11px] font-bold uppercase tracking-widest">Showing:</span>
+            <span className="text-gray-400 text-[11px] font-bold uppercase tracking-widest">Showing:</span>
             {['today','week','all'].map(s => (
               <button key={s} onClick={() => setShiftMgr(s)}
                 className={`px-4 py-2 rounded-xl font-bold text-[11px] uppercase tracking-widest transition-all ${
-                  shiftMgr === s ? 'bg-amber-500 text-black' : 'bg-white/5 text-gray-400 hover:text-white'
+                  shiftMgr === s ? 'bg-green-600 text-white' : 'bg-green-50 text-gray-400 hover:text-green-700'
                 }`}>
                 {s==='today'?'Today':s==='week'?'This Week':'All Time'}
               </button>
@@ -784,44 +848,44 @@ export const ManagerView = ({ patients: patientsProp }) => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="dashboard-card p-8 flex flex-col items-center justify-center text-center">
-              <p className="text-gray-500 font-bold text-xs uppercase tracking-[0.3em] mb-2">Total Patients</p>
-              <div className="text-6xl font-black text-amber-500">{filteredByShift.length}</div>
+              <p className="text-gray-400 font-bold text-xs uppercase tracking-[0.3em] mb-2">Total Patients</p>
+              <div className="text-6xl font-black text-green-600">{filteredByShift.length}</div>
               <div className="flex gap-2 mt-3">
                 <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-lg text-[10px] font-black uppercase">{filteredByShift.filter(p=>p.status==='done').length} Done</span>
                 <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-lg text-[10px] font-black uppercase">{filteredByShift.filter(p=>p.status!=='done').length} Waiting</span>
               </div>
             </div>
             <div className="dashboard-card p-8 flex flex-col items-center justify-center text-center">
-              <p className="text-gray-500 font-bold text-xs uppercase tracking-[0.3em] mb-2">Total Staff</p>
-              <div className="text-6xl font-black text-blue-500">{staffList.length}</div>
+              <p className="text-gray-400 font-bold text-xs uppercase tracking-[0.3em] mb-2">Total Staff</p>
+              <div className="text-6xl font-black text-emerald-600">{staffList.length}</div>
               <div className="flex gap-2 mt-3">
                 <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-lg text-[10px] font-black uppercase">{staffList.filter(s=>s.role==='triage').length} Nurses</span>
-                <span className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-lg text-[10px] font-black uppercase">{staffList.filter(s=>s.role==='doctor').length} Doctors</span>
+                <span className="px-3 py-1 bg-emerald-100 text-emerald-600 rounded-lg text-[10px] font-black uppercase">{staffList.filter(s=>s.role==='doctor').length} Doctors</span>
               </div>
             </div>
           </div>
 
           <div className="dashboard-card p-8">
-            <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-4">
-              <h3 className="text-white font-black text-xs uppercase tracking-widest">Recent Activity</h3>
+            <div className="flex justify-between items-center mb-4 border-b border-green-100 pb-4">
+              <h3 className="text-[#1a3a2a] font-black text-xs uppercase tracking-widest">Recent Activity</h3>
               <button onClick={exportCSV}
-                className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-amber-500/20 transition-all">
+                className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-600 border border-green-200 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-green-100 transition-all">
                 <Download size={13}/> Export CSV
               </button>
             </div>
             {filteredByShift.slice(-5).reverse().map(p => (
-              <div key={p.id} className="border-l-2 border-amber-500 pl-4 mb-3 flex justify-between items-center">
+              <div key={p.id} className="border-l-2 border-green-500 pl-4 mb-3 flex justify-between items-center">
                 <div>
-                  <span className="text-white font-bold text-sm">{p.fullname}</span>
-                  <span className="text-gray-500 text-xs"> — {p.condition}</span>
+                  <span className="text-[#1a3a2a] font-bold text-sm">{p.fullname}</span>
+                  <span className="text-gray-400 text-xs"> — {p.condition}</span>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <UrgencyBadge urgency={p.urgency}/>
-                  <span className="text-gray-600 text-[11px]">{timeAgo(p.arrival_time)}</span>
+                  <span className="text-gray-400 text-[11px]">{timeAgo(p.arrival_time)}</span>
                 </div>
               </div>
             ))}
-            {filteredByShift.length === 0 && <p className="text-gray-700 text-xs font-bold uppercase tracking-widest">No patients yet</p>}
+            {filteredByShift.length === 0 && <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">No patients yet</p>}
           </div>
         </div>
       )}
@@ -845,7 +909,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
           </div>
 
           <div className="dashboard-card p-8">
-            <h3 className="text-white font-black text-xs uppercase tracking-widest mb-6 flex items-center gap-2">
+            <h3 className="text-[#1a3a2a] font-black text-xs uppercase tracking-widest mb-6 flex items-center gap-2">
               <TrendingUp size={15} className="text-amber-400"/> Urgency Distribution
             </h3>
             {[
@@ -858,7 +922,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
               return (
                 <div key={s.key} className="flex items-center gap-4 mb-4">
                   <div className="w-16 text-right text-[11px] font-bold uppercase text-gray-500">{s.label}</div>
-                  <div className="flex-1 bg-white/5 rounded-full h-6 overflow-hidden">
+                  <div className="flex-1 bg-green-100 rounded-full h-6 overflow-hidden">
                     <div className={`${s.bar} h-full rounded-full flex items-center justify-end pr-2 transition-all`}
                       style={{ width:`${Math.max(pct,2)}%` }}>
                       {pct > 10 && <span className="text-white text-[10px] font-black">{uc[s.key]}</span>}
@@ -872,7 +936,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
 
           <div className="grid grid-cols-3 gap-4">
             {[
-              { label:'Total Patients', val:patients.length,                              text:'text-amber-500' },
+              { label:'Total Patients', val:patients.length,                              text:'text-green-600' },
               { label:'Consulted',      val:patients.filter(p=>p.status==='done').length, text:'text-green-400' },
               { label:'Waiting',        val:patients.filter(p=>p.status!=='done').length, text:'text-blue-400'  },
             ].map(s => (
@@ -888,10 +952,10 @@ export const ManagerView = ({ patients: patientsProp }) => {
       {/* PATIENT RECORDS */}
       {tab === 'patients' && (
         <div className="dashboard-card p-8">
-          <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-4">
-            <h3 className="text-white font-black text-xs uppercase tracking-widest">All Patient Records</h3>
+          <div className="flex justify-between items-center mb-4 border-b border-green-100 pb-4">
+            <h3 className="text-[#1a3a2a] font-black text-xs uppercase tracking-widest">All Patient Records</h3>
             <button onClick={exportCSV}
-              className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-amber-500/20 transition-all">
+              className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-600 border border-green-200 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-green-100 transition-all">
               <Download size={13}/> Export CSV
             </button>
           </div>
@@ -901,10 +965,10 @@ export const ManagerView = ({ patients: patientsProp }) => {
           </div>
           <div className="space-y-3 max-h-[500px] overflow-y-auto">
             {filtPatients.map(p => (
-              <div key={p.id} className="p-5 bg-black/20 rounded-2xl border border-white/5 flex justify-between items-center gap-4">
+              <div key={p.id} className="p-5 bg-green-50 rounded-2xl border border-green-100 flex justify-between items-center gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <p className="text-white font-bold truncate">{p.fullname}</p>
+                    <p className="text-[#1a3a2a] font-bold truncate">{p.fullname}</p>
                     {p.status==='done' && <span className="px-2 py-0.5 bg-green-500/20 text-green-400 rounded text-[9px] font-black uppercase shrink-0">Done</span>}
                   </div>
                   <p className="text-gray-500 text-xs italic truncate">"{p.condition}"</p>
@@ -916,7 +980,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
                 </div>
               </div>
             ))}
-            {filtPatients.length === 0 && <p className="text-center text-gray-700 text-xs font-bold uppercase py-8 tracking-widest">No records found</p>}
+            {filtPatients.length === 0 && <p className="text-center text-gray-400 text-xs font-bold uppercase py-8 tracking-widest">No records found</p>}
           </div>
         </div>
       )}
@@ -929,17 +993,17 @@ export const ManagerView = ({ patients: patientsProp }) => {
               <div className="flex items-center gap-4 mb-6">
                 <div className="p-3 bg-green-500/10 rounded-xl"><ShieldCheck className="text-green-400" size={24}/></div>
                 <div>
-                  <h3 className="text-white font-black text-lg">Account Created!</h3>
+                  <h3 className="text-[#1a3a2a] font-black text-lg">Account Created!</h3>
                   <p className="text-green-400 text-xs mt-1">Credentials sent to {created.email}</p>
                 </div>
               </div>
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-3 mb-4">
+              <div className="bg-green-50 border border-green-100 rounded-2xl p-6 space-y-3 mb-4">
                 {[
-                  { label:'Role',     val:ROLE_LABEL[created.role], cls:'text-amber-400'      },
-                  { label:'Name',     val:created.fullName,         cls:'text-white'           },
-                  { label:'Email',    val:created.email,            cls:'text-white'           },
-                  { label:'Username', val:created.username,         cls:'text-white font-mono' },
-                  { label:'Password', val:created.password,         cls:'text-white font-mono' },
+                  { label:'Role',     val:ROLE_LABEL[created.role], cls:'text-green-600'            },
+                  { label:'Name',     val:created.fullName,         cls:'text-[#1a3a2a]'            },
+                  { label:'Email',    val:created.email,            cls:'text-[#1a3a2a]'            },
+                  { label:'Username', val:created.username,         cls:'text-[#1a3a2a] font-mono' },
+                  { label:'Password', val:created.password,         cls:'text-[#1a3a2a] font-mono' },
                 ].map(row => (
                   <div key={row.label} className="flex justify-between items-center">
                     <span className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">{row.label}</span>
@@ -947,18 +1011,18 @@ export const ManagerView = ({ patients: patientsProp }) => {
                   </div>
                 ))}
               </div>
-              <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 mb-4">
-                <p className="text-amber-400 text-xs">⚠️ Email sent. Keep a copy of these credentials just in case.</p>
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4">
+                <p className="text-amber-600 text-xs">⚠️ Email sent. Keep a copy of these credentials just in case.</p>
               </div>
               <button onClick={() => setCreated(null)}
-                className="w-full bg-amber-500 hover:bg-amber-400 text-black p-4 rounded-xl font-black uppercase tracking-widest transition-all">
+                className="w-full bg-green-600 hover:bg-green-500 text-white p-4 rounded-xl font-black uppercase tracking-widest transition-all">
                 Create Another Account
               </button>
             </div>
           ) : (
             <div className="dashboard-card p-8">
-              <h3 className="text-white font-black text-lg mb-6 flex items-center gap-2">
-                <UserPlus className="text-amber-400" size={22}/> New Staff Account
+              <h3 className="text-[#1a3a2a] font-black text-lg mb-6 flex items-center gap-2">
+                <UserPlus className="text-green-600" size={22}/> New Staff Account
               </h3>
               {error && (
                 <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 mb-4">
@@ -998,7 +1062,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
                   </div>
                 </div>
                 <button onClick={handleCreate} disabled={loading}
-                  className="w-full bg-amber-500 hover:bg-amber-400 disabled:opacity-60 text-black p-4 rounded-xl font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2">
+                  className="w-full bg-green-600 hover:bg-green-500 disabled:opacity-60 text-white p-4 rounded-xl font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2">
                   {loading ? <><Loader2 size={16} className="animate-spin"/> Creating...</> : <><UserPlus size={16}/> Create Account</>}
                 </button>
               </div>
@@ -1010,9 +1074,9 @@ export const ManagerView = ({ patients: patientsProp }) => {
       {/* STAFF LIST */}
       {tab === 'staff' && (
         <div className="dashboard-card p-8">
-          <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-4">
-            <h3 className="text-white font-black text-xs uppercase tracking-widest flex items-center gap-2">
-              <Users size={15} className="text-amber-400"/> All Staff
+          <div className="flex justify-between items-center mb-4 border-b border-green-100 pb-4">
+            <h3 className="text-[#1a3a2a] font-black text-xs uppercase tracking-widest flex items-center gap-2">
+              <Users size={15} className="text-green-600"/> All Staff
             </h3>
           </div>
           <div className="relative mb-4">
@@ -1021,18 +1085,18 @@ export const ManagerView = ({ patients: patientsProp }) => {
           </div>
           <div className="space-y-3">
             {filtStaff.map(s => (
-              <div key={s.id} className="p-5 bg-black/20 rounded-2xl border border-white/5 flex justify-between items-center">
+              <div key={s.id} className="p-5 bg-green-50 rounded-2xl border border-green-100 flex justify-between items-center">
                 <div className="flex items-center gap-4">
-                  <div className={`p-2 bg-white/5 rounded-xl ${ROLE_COLOR[s.role]||'text-amber-400'}`}>
+                  <div className={`p-2 bg-green-50 rounded-xl ${ROLE_COLOR[s.role]||'text-green-600'}`}>
                     {s.role==='triage' ? <Activity size={16}/> : <Stethoscope size={16}/>}
                   </div>
                   <div>
-                    <p className="text-white font-bold">{s.full_name}</p>
+                    <p className="text-[#1a3a2a] font-bold">{s.full_name}</p>
                     <p className="text-gray-500 text-xs font-mono">{s.username}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className={`px-3 py-1 bg-white/5 rounded-lg text-[10px] font-black uppercase tracking-widest ${ROLE_COLOR[s.role]||'text-amber-400'}`}>
+                  <span className={`px-3 py-1 bg-green-50 rounded-lg text-[10px] font-black uppercase tracking-widest ${ROLE_COLOR[s.role]||'text-green-600'}`}>
                     {ROLE_LABEL[s.role]}
                   </span>
                   <button onClick={() => handleDelete(s.id, s.username)}
@@ -1042,7 +1106,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
                 </div>
               </div>
             ))}
-            {filtStaff.length === 0 && <p className="text-center text-gray-700 text-xs font-bold uppercase py-8 tracking-widest">No staff found</p>}
+            {filtStaff.length === 0 && <p className="text-center text-gray-400 text-xs font-bold uppercase py-8 tracking-widest">No staff found</p>}
           </div>
         </div>
       )}
