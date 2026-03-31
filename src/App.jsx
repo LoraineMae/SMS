@@ -90,7 +90,7 @@ function App() {
       <button onClick={() => setViewMode('landing')} style={{ background:'none', border:'none', color:'#16a34a', cursor:'pointer', display:'flex', alignItems:'center', gap:8, fontWeight:700, fontSize:'11px', textTransform:'uppercase', letterSpacing:'0.15em', marginBottom:'1.5rem', padding:0 }}>
         <ArrowLeft size={16}/> Back
       </button>
-      <PatientIntakeForm formData={formData} setFormData={setFormData} addPatient={addPatient}/>
+      <PatientIntakeForm formData={formData} setFormData={setFormData}/>
     </div>
   );
 

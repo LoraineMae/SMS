@@ -36,52 +36,103 @@ const UrgencyBadge = ({ urgency }) => {
 };
 
 // ─── ROLE SELECTION ───────────────────────────────────────────────────────────
-export const RoleSelectionScreen = ({ onSelect }) => (
-  <div className="min-h-screen flex flex-col justify-center bg-[#f0faf4]">
-    <div className="text-center mb-12 w-full">
-      <h2 className="text-5xl font-black text-[#1a3a2a] italic tracking-tighter">
-        HEALTH<span className="text-green-600">FLOW</span>
-      </h2>
-      <p className="text-green-600/60 uppercase text-[10px] tracking-[0.5em] mt-4 font-bold">
-        Priority Triage System
-      </p>
-    </div>
-    <div className="flex gap-10 px-10">
-      {/* Left — role buttons */}
-      <div className="flex flex-col gap-6 items-start">
-        {[
-          { id: 'patient', label: 'Patient', icon: <User />,        color: 'text-green-600'   },
-          { id: 'triage',  label: 'Nurse',   icon: <Activity />,    color: 'text-emerald-600' },
-          { id: 'doctor',  label: 'Doctor',  icon: <Stethoscope />, color: 'text-teal-600'    },
-          { id: 'manager', label: 'Manager', icon: <BarChart3 />,   color: 'text-green-700'   },
-        ].map(role => (
-          <button
-            key={role.id}
-            onClick={() => onSelect(role.id)}
-            className="dashboard-card w-75 h-33 flex flex-col items-center justify-center gap-5 hover:border-green-500 transition-all text-[#1a3a2a] group"
-          >
-            <div className={`p-5 bg-green-50 rounded-3xl transition-colors group-hover:bg-green-500 group-hover:text-white ${role.color}`}>
-              {role.icon}
+export const RoleSelectionScreen = ({ onSelect }) => {
+  const [showStaff, setShowStaff] = React.useState(false);
+
+  return (
+    <div className="min-h-screen flex flex-col bg-[#f0faf4]">
+
+      {/* ── NAVBAR ── */}
+      <nav style={{ background:'white', borderBottom:'1px solid rgba(34,197,94,0.15)', padding:'0 2rem', height:'64px', display:'flex', alignItems:'center', justifyContent:'space-between', boxShadow:'0 1px 8px rgba(0,80,30,0.06)' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          <Activity color="#16a34a" size={22}/>
+          <span style={{ fontWeight:900, fontSize:'1.1rem', fontStyle:'italic', letterSpacing:'-1px', color:'#1a3a2a' }}>
+            HEALTH<span style={{ color:'#16a34a' }}>FLOW</span>
+          </span>
+        </div>
+        {/* Discrete staff link — small and subtle */}
+        <button
+          onClick={() => setShowStaff(v => !v)}
+          style={{ background:'none', border:'none', color:'rgba(107,114,128,0.5)', fontSize:'10px', fontWeight:600, cursor:'pointer', textTransform:'uppercase', letterSpacing:'0.15em', padding:'4px 8px' }}
+        >
+          Staff Access
+        </button>
+      </nav>
+
+      {/* ── HERO ── */}
+      <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'3rem 2rem' }}>
+
+        {/* Hero text */}
+        <div style={{ textAlign:'center', marginBottom:'3rem', maxWidth:'560px' }}>
+          <h1 style={{ fontWeight:900, fontSize:'clamp(2rem,5vw,3.2rem)', fontStyle:'italic', letterSpacing:'-2px', color:'#1a3a2a', margin:'0 0 1rem', lineHeight:1 }}>
+            HEALTH<span style={{ color:'#16a34a' }}>FLOW</span>
+          </h1>
+          <p style={{ color:'#4b7a5a', fontSize:'1rem', fontWeight:500, margin:'0 0 0.5rem', lineHeight:1.6 }}>
+            Priority-Based Patient Scheduling System
+          </p>
+          <p style={{ color:'#9ca3af', fontSize:'13px', margin:0 }}>
+            Walk in, register, and we'll take care of the rest.
+          </p>
+        </div>
+
+        {/* Patient Register Button — big and prominent */}
+        {!showStaff && (
+          <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:'1.5rem', width:'100%', maxWidth:'400px' }}>
+            <button
+              onClick={() => onSelect('patient')}
+              style={{ width:'100%', background:'#16a34a', color:'white', border:'none', padding:'1.25rem 2rem', borderRadius:'1rem', fontWeight:800, fontSize:'1rem', textTransform:'uppercase', letterSpacing:'0.15em', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:12, boxShadow:'0 4px 20px rgba(22,163,74,0.3)', transition:'all 0.2s' }}
+              onMouseOver={e => e.currentTarget.style.background='#15803d'}
+              onMouseOut={e => e.currentTarget.style.background='#16a34a'}
+            >
+              <User size={22}/>
+              Register as Patient
+            </button>
+            <p style={{ color:'#9ca3af', fontSize:'11px', textAlign:'center', lineHeight:1.6 }}>
+              Click to register and join the queue.<br/>A nurse will assess your condition shortly.
+            </p>
+          </div>
+        )}
+
+        {/* Staff portal — only shown when "Staff Access" is clicked */}
+        {showStaff && (
+          <div style={{ width:'100%', maxWidth:'420px' }}>
+            <div style={{ background:'white', borderRadius:'1.25rem', border:'1px solid rgba(34,197,94,0.15)', boxShadow:'0 4px 20px rgba(0,80,30,0.08)', padding:'2rem' }}>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'1.5rem' }}>
+                <p style={{ color:'#1a3a2a', fontWeight:700, fontSize:'13px', textTransform:'uppercase', letterSpacing:'0.15em', margin:0 }}>Staff Portal</p>
+                <button onClick={() => setShowStaff(false)} style={{ background:'none', border:'none', color:'#9ca3af', cursor:'pointer', fontSize:'18px', lineHeight:1 }}>✕</button>
+              </div>
+              <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem' }}>
+                {[
+                  { id:'triage',  label:'Nurse Login',   icon:<Activity size={18}/>,    color:'#16a34a' },
+                  { id:'doctor',  label:'Doctor Login',  icon:<Stethoscope size={18}/>, color:'#0d9488' },
+                  { id:'manager', label:'Manager Login', icon:<BarChart3 size={18}/>,   color:'#d97706' },
+                ].map(role => (
+                  <button
+                    key={role.id}
+                    onClick={() => onSelect(role.id)}
+                    style={{ display:'flex', alignItems:'center', gap:'1rem', padding:'0.9rem 1.25rem', borderRadius:'0.75rem', background:'#f0faf4', border:'1px solid rgba(34,197,94,0.15)', color:'#1a3a2a', cursor:'pointer', fontWeight:700, fontSize:'13px', transition:'all 0.15s' }}
+                    onMouseOver={e => e.currentTarget.style.background='#d1fae5'}
+                    onMouseOut={e => e.currentTarget.style.background='#f0faf4'}
+                  >
+                    <span style={{ color:role.color }}>{role.icon}</span>
+                    {role.label}
+                  </button>
+                ))}
+              </div>
             </div>
-            <span className="font-bold tracking-widest text-xs uppercase">{role.label} PORTAL</span>
-          </button>
-        ))}
+          </div>
+        )}
+
       </div>
 
-      {/* Right — welcome panel */}
-      <div className="flex flex-col justify-start flex-1">
-        <div className="dashboard-card p-10 w-full text-[#1a3a2a] h-[600px] flex flex-col">
-          <center>
-            <h1 className="text-4xl font-bold mb-4">WELCOME!</h1>
-            <p className="text-green-600/60 text-sm">
-              Users
-            </p>
-          </center>
-        </div>
-      </div>
+      {/* ── FOOTER ── */}
+      <footer style={{ textAlign:'center', padding:'1.5rem', color:'rgba(107,114,128,0.5)', fontSize:'10px', fontWeight:600, letterSpacing:'0.15em', textTransform:'uppercase', borderTop:'1px solid rgba(34,197,94,0.08)' }}>
+        HealthFlow Priority Triage System
+      </footer>
+
     </div>
-  </div>
-);
+  );
+};
 
 // ─── QUEUE TICKET INLINE ──────────────────────────────────────────────────────
 const QueueTicketInline = ({ patient, onBack }) => (
@@ -170,7 +221,8 @@ export const PatientIntakeForm = ({ formData, setFormData, addPatient: addPatien
       if (error) throw error;
       setTicket(data);
       setSubmitted(true);
-      if (addPatientProp) addPatientProp();
+      // NOTE: We do NOT call addPatientProp() here — the insert already happened above.
+      // Calling it would cause a duplicate patient record.
     } catch(e) {
       console.error(e);
       alert('Failed to register. Please try again.');
