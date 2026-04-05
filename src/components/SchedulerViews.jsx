@@ -37,33 +37,158 @@ const UrgencyBadge = ({ urgency }) => {
 
 // ─── ROLE SELECTION ───────────────────────────────────────────────────────────
 export const RoleSelectionScreen = ({ onSelect }) => {
-  const [showStaff, setShowStaff] = React.useState(false);
+  const [activeNav,  setActiveNav]  = React.useState(null); // 'login' | 'about' | 'contact'
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f0faf4]">
+    <div style={{ minHeight:'100vh', display:'flex', flexDirection:'column', background:'#f0faf4', fontFamily:'Poppins, sans-serif' }}>
 
-      {/* ── NAVBAR ── */}
-      <nav style={{ background:'white', borderBottom:'1px solid rgba(34,197,94,0.15)', padding:'0 2rem', height:'64px', display:'flex', alignItems:'center', justifyContent:'space-between', boxShadow:'0 1px 8px rgba(0,80,30,0.06)' }}>
-        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <Activity color="#16a34a" size={22}/>
-          <span style={{ fontWeight:900, fontSize:'1.1rem', fontStyle:'italic', letterSpacing:'-1px', color:'#1a3a2a' }}>
-            HEALTH<span style={{ color:'#16a34a' }}>FLOW</span>
-          </span>
+      {/* ══════════════════════════════════════
+          NAVBAR — matches reference style
+      ══════════════════════════════════════ */}
+      <nav style={{
+        background:'linear-gradient(135deg, #14532d, #166534)',
+        padding:'0 2.5rem',
+        height:'68px',
+        display:'flex',
+        alignItems:'center',
+        justifyContent:'space-between',
+        boxShadow:'0 2px 12px rgba(0,0,0,0.3)',
+        position:'sticky',
+        top:0,
+        zIndex:100,
+      }}>
+        {/* Left — Logo + Name */}
+        <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
+          <div style={{ width:44, height:44, borderRadius:'50%', background:'rgba(255,255,255,0.15)', border:'2px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+            <Activity color="white" size={22}/>
+          </div>
+          <div>
+            <div style={{ fontWeight:900, fontSize:'1.1rem', fontStyle:'italic', letterSpacing:'-1px', color:'white', lineHeight:1 }}>
+              HEALTH<span style={{ color:'#86efac' }}>FLOW</span>
+            </div>
+            <div style={{ fontSize:'9px', fontWeight:600, color:'rgba(255,255,255,0.55)', textTransform:'uppercase', letterSpacing:'0.2em', marginTop:2 }}>
+              Priority Triage System
+            </div>
+          </div>
         </div>
-        {/* Discrete staff link — small and subtle */}
-        <button
-          onClick={() => setShowStaff(v => !v)}
-          style={{ background:'none', border:'none', color:'rgba(107,114,128,0.5)', fontSize:'10px', fontWeight:600, cursor:'pointer', textTransform:'uppercase', letterSpacing:'0.15em', padding:'4px 8px' }}
-        >
-          Staff Access
-        </button>
+
+        {/* Right — Nav Links */}
+        <div style={{ display:'flex', alignItems:'center', gap:'0.25rem' }}>
+          {[
+            { key:'about',   label:'ABOUT'   },
+            { key:'contact', label:'CONTACT' },
+            { key:'login',   label:'STAFF LOGIN' },
+          ].map(item => (
+            <button
+              key={item.key}
+              onClick={() => setActiveNav(activeNav === item.key ? null : item.key)}
+              style={{
+                background: activeNav === item.key ? 'rgba(255,255,255,0.18)' : 'transparent',
+                border:'none',
+                color:'white',
+                padding:'0.6rem 1.25rem',
+                borderRadius:'0.5rem',
+                fontWeight:700,
+                fontSize:'12px',
+                letterSpacing:'0.12em',
+                cursor:'pointer',
+                textTransform:'uppercase',
+                transition:'background 0.15s',
+                display:'flex',
+                alignItems:'center',
+                gap:'5px',
+              }}
+              onMouseOver={e => { if(activeNav !== item.key) e.currentTarget.style.background='rgba(255,255,255,0.1)'; }}
+              onMouseOut={e => { if(activeNav !== item.key) e.currentTarget.style.background='transparent'; }}
+            >
+              {item.label}
+              {item.key === 'login' && <span style={{ fontSize:'10px', opacity:0.7 }}>▾</span>}
+            </button>
+          ))}
+        </div>
       </nav>
 
-      {/* ── HERO ── */}
-      <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'3rem 2rem' }}>
+      {/* ══════════════════════════════════════
+          DROPDOWN PANELS
+      ══════════════════════════════════════ */}
 
-        {/* Hero text */}
-        <div style={{ textAlign:'center', marginBottom:'3rem', maxWidth:'560px' }}>
+      {/* About dropdown */}
+      {activeNav === 'about' && (
+        <div style={{ background:'white', borderBottom:'2px solid rgba(22,101,52,0.15)', boxShadow:'0 8px 24px rgba(0,0,0,0.08)', padding:'2rem 3rem', display:'grid', gridTemplateColumns:'1fr 1fr', gap:'2rem', maxWidth:'860px', margin:'0 auto', width:'100%' }}>
+          <div>
+            <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:'0.75rem' }}>
+              <Activity color="#16a34a" size={18}/>
+              <span style={{ fontWeight:900, fontSize:'1rem', fontStyle:'italic', color:'#1a3a2a' }}>HEALTH<span style={{ color:'#16a34a' }}>FLOW</span></span>
+            </div>
+            <p style={{ color:'#4b7a5a', fontSize:'12.5px', lineHeight:1.75, margin:'0 0 0.75rem' }}>
+              A Priority-Based Patient Scheduling System designed to automate triage and manage patient queues in real time.
+            </p>
+            <p style={{ color:'#9ca3af', fontSize:'11.5px', lineHeight:1.75, margin:0 }}>
+              Patients are sorted by urgency level — Critical, High, Medium, and Low — ensuring the most critical cases are always attended to first.
+            </p>
+          </div>
+          <div>
+            <p style={{ color:'#9ca3af', fontSize:'10px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.15em', margin:'0 0 10px' }}>Built With</p>
+            <div style={{ display:'flex', flexWrap:'wrap', gap:'6px', marginBottom:'1rem' }}>
+              {['React','Vite','Supabase','bcrypt','EmailJS'].map(t => (
+                <span key={t} style={{ background:'#f0faf4', border:'1px solid rgba(34,197,94,0.2)', color:'#16a34a', fontSize:'10px', fontWeight:700, padding:'4px 12px', borderRadius:'20px' }}>{t}</span>
+              ))}
+            </div>
+            <p style={{ color:'#9ca3af', fontSize:'10px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.15em', margin:'0 0 6px' }}>Developer</p>
+            <p style={{ color:'#1a3a2a', fontSize:'12px', fontWeight:600, margin:0 }}>Department of Computer Science</p>
+            <p style={{ color:'#4b7a5a', fontSize:'11px', margin:'2px 0 0' }}>Mariano Marcos State University — CCIS</p>
+          </div>
+        </div>
+      )}
+
+      {/* Contact dropdown */}
+      {activeNav === 'contact' && (
+        <div style={{ background:'white', borderBottom:'2px solid rgba(22,101,52,0.15)', boxShadow:'0 8px 24px rgba(0,0,0,0.08)', padding:'2rem 3rem', display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'2rem', maxWidth:'860px', margin:'0 auto', width:'100%' }}>
+          <div>
+            <p style={{ color:'#9ca3af', fontSize:'10px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.15em', margin:'0 0 6px' }}>Institution</p>
+            <p style={{ color:'#1a3a2a', fontSize:'12.5px', fontWeight:700, margin:'0 0 4px' }}>Mariano Marcos State University</p>
+            <p style={{ color:'#4b7a5a', fontSize:'11.5px', margin:0 }}>College of Computing and Information Sciences</p>
+          </div>
+          <div>
+            <p style={{ color:'#9ca3af', fontSize:'10px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.15em', margin:'0 0 6px' }}>Department</p>
+            <p style={{ color:'#1a3a2a', fontSize:'12.5px', fontWeight:700, margin:'0 0 12px' }}>Department of Computer Science</p>
+            <p style={{ color:'#9ca3af', fontSize:'10px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.15em', margin:'0 0 6px' }}>Email</p>
+            <p style={{ color:'#16a34a', fontSize:'12px', fontWeight:600, margin:0 }}>lorainemaemaramba@gmail.com</p>
+          </div>
+          <div>
+            <p style={{ color:'#9ca3af', fontSize:'10px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.15em', margin:'0 0 6px' }}>Support</p>
+            <p style={{ color:'#4b7a5a', fontSize:'11.5px', lineHeight:1.65, margin:0 }}>For system issues, please approach any clinic staff or the system administrator for assistance.</p>
+          </div>
+        </div>
+      )}
+
+      {/* Staff Login dropdown */}
+      {activeNav === 'login' && (
+        <div style={{ background:'white', borderBottom:'2px solid rgba(22,101,52,0.15)', boxShadow:'0 8px 24px rgba(0,0,0,0.08)', padding:'1.5rem 3rem', display:'flex', gap:'1rem', justifyContent:'flex-end', maxWidth:'100%' }}>
+          {[
+            { id:'triage',  label:'Nurse Login',   icon:<Activity size={16}/>,    color:'#16a34a', bg:'rgba(22,163,74,0.08)',  border:'rgba(22,163,74,0.2)'  },
+            { id:'doctor',  label:'Doctor Login',  icon:<Stethoscope size={16}/>, color:'#0d9488', bg:'rgba(13,148,136,0.08)', border:'rgba(13,148,136,0.2)' },
+            { id:'manager', label:'Manager Login', icon:<BarChart3 size={16}/>,   color:'#d97706', bg:'rgba(217,119,6,0.08)',  border:'rgba(217,119,6,0.2)'  },
+          ].map(role => (
+            <button
+              key={role.id}
+              onClick={() => onSelect(role.id)}
+              style={{ display:'flex', alignItems:'center', gap:'8px', padding:'0.75rem 1.5rem', borderRadius:'0.75rem', background:role.bg, border:`1px solid ${role.border}`, color:role.color, cursor:'pointer', fontWeight:700, fontSize:'12px', textTransform:'uppercase', letterSpacing:'0.1em', transition:'all 0.15s' }}
+              onMouseOver={e => e.currentTarget.style.opacity='0.8'}
+              onMouseOut={e => e.currentTarget.style.opacity='1'}
+            >
+              {role.icon}
+              {role.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════
+          HERO — Patient Registration
+      ══════════════════════════════════════ */}
+      <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'4rem 2rem' }}>
+        <div style={{ textAlign:'center', marginBottom:'3rem', maxWidth:'520px' }}>
           <h1 style={{ fontWeight:900, fontSize:'clamp(2rem,5vw,3.2rem)', fontStyle:'italic', letterSpacing:'-2px', color:'#1a3a2a', margin:'0 0 1rem', lineHeight:1 }}>
             HEALTH<span style={{ color:'#16a34a' }}>FLOW</span>
           </h1>
@@ -75,59 +200,25 @@ export const RoleSelectionScreen = ({ onSelect }) => {
           </p>
         </div>
 
-        {/* Patient Register Button — big and prominent */}
-        {!showStaff && (
-          <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:'1.5rem', width:'100%', maxWidth:'400px' }}>
-            <button
-              onClick={() => onSelect('patient')}
-              style={{ width:'100%', background:'#16a34a', color:'white', border:'none', padding:'1.25rem 2rem', borderRadius:'1rem', fontWeight:800, fontSize:'1rem', textTransform:'uppercase', letterSpacing:'0.15em', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:12, boxShadow:'0 4px 20px rgba(22,163,74,0.3)', transition:'all 0.2s' }}
-              onMouseOver={e => e.currentTarget.style.background='#15803d'}
-              onMouseOut={e => e.currentTarget.style.background='#16a34a'}
-            >
-              <User size={22}/>
-              Register as Patient
-            </button>
-            <p style={{ color:'#9ca3af', fontSize:'11px', textAlign:'center', lineHeight:1.6 }}>
-              Click to register and join the queue.<br/>A nurse will assess your condition shortly.
-            </p>
-          </div>
-        )}
-
-        {/* Staff portal — only shown when "Staff Access" is clicked */}
-        {showStaff && (
-          <div style={{ width:'100%', maxWidth:'420px' }}>
-            <div style={{ background:'white', borderRadius:'1.25rem', border:'1px solid rgba(34,197,94,0.15)', boxShadow:'0 4px 20px rgba(0,80,30,0.08)', padding:'2rem' }}>
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'1.5rem' }}>
-                <p style={{ color:'#1a3a2a', fontWeight:700, fontSize:'13px', textTransform:'uppercase', letterSpacing:'0.15em', margin:0 }}>Staff Portal</p>
-                <button onClick={() => setShowStaff(false)} style={{ background:'none', border:'none', color:'#9ca3af', cursor:'pointer', fontSize:'18px', lineHeight:1 }}>✕</button>
-              </div>
-              <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem' }}>
-                {[
-                  { id:'triage',  label:'Nurse Login',   icon:<Activity size={18}/>,    color:'#16a34a' },
-                  { id:'doctor',  label:'Doctor Login',  icon:<Stethoscope size={18}/>, color:'#0d9488' },
-                  { id:'manager', label:'Manager Login', icon:<BarChart3 size={18}/>,   color:'#d97706' },
-                ].map(role => (
-                  <button
-                    key={role.id}
-                    onClick={() => onSelect(role.id)}
-                    style={{ display:'flex', alignItems:'center', gap:'1rem', padding:'0.9rem 1.25rem', borderRadius:'0.75rem', background:'#f0faf4', border:'1px solid rgba(34,197,94,0.15)', color:'#1a3a2a', cursor:'pointer', fontWeight:700, fontSize:'13px', transition:'all 0.15s' }}
-                    onMouseOver={e => e.currentTarget.style.background='#d1fae5'}
-                    onMouseOut={e => e.currentTarget.style.background='#f0faf4'}
-                  >
-                    <span style={{ color:role.color }}>{role.icon}</span>
-                    {role.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
+        <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:'1.5rem', width:'100%', maxWidth:'380px' }}>
+          <button
+            onClick={() => onSelect('patient')}
+            style={{ width:'100%', background:'#16a34a', color:'white', border:'none', padding:'1.25rem 2rem', borderRadius:'1rem', fontWeight:800, fontSize:'1rem', textTransform:'uppercase', letterSpacing:'0.15em', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:12, boxShadow:'0 4px 20px rgba(22,163,74,0.3)', transition:'all 0.2s' }}
+            onMouseOver={e => e.currentTarget.style.background='#15803d'}
+            onMouseOut={e => e.currentTarget.style.background='#16a34a'}
+          >
+            <User size={22}/>
+            Register as Patient
+          </button>
+          <p style={{ color:'#9ca3af', fontSize:'11px', textAlign:'center', lineHeight:1.6, margin:0 }}>
+            Click to register and join the queue.<br/>A nurse will assess your condition shortly.
+          </p>
+        </div>
       </div>
 
       {/* ── FOOTER ── */}
-      <footer style={{ textAlign:'center', padding:'1.5rem', color:'rgba(107,114,128,0.5)', fontSize:'10px', fontWeight:600, letterSpacing:'0.15em', textTransform:'uppercase', borderTop:'1px solid rgba(34,197,94,0.08)' }}>
-        HealthFlow Priority Triage System
+      <footer style={{ textAlign:'center', padding:'1.5rem', color:'rgba(107,114,128,0.5)', fontSize:'10px', fontWeight:600, letterSpacing:'0.15em', textTransform:'uppercase', borderTop:'1px solid rgba(34,197,94,0.1)' }}>
+        HealthFlow Priority Triage System · Mariano Marcos State University
       </footer>
 
     </div>
