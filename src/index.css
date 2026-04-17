@@ -1,1 +1,12 @@
 @import "tailwindcss";
+
+/* Mobile viewport fix */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Prevent horizontal overflow on mobile */
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
