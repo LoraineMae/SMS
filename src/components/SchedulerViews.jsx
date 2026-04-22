@@ -288,7 +288,7 @@ export const PatientIntakeForm = ({ formData, setFormData, addPatient: addPatien
     if (!form.dob)                      newErrors.dob       = 'Date of birth is required.';
     if (!form.gender)                   newErrors.gender    = 'Gender is required.';
     if (!form.phone.trim())             newErrors.phone     = 'Phone number is required.';
-    else if (!/^\d{11}$/.test(form.phone.trim())) newErrors.phone = 'Phone number must be exactly 11 digits (numbers only).';
+    else if (!/^09\d{9}$/.test(form.phone.trim())) newErrors.phone = 'Phone number must start with 09 and be 11 digits.';
     if (!form.condition.trim())         newErrors.condition = 'Condition / symptoms is required.';
     return newErrors;
   };
@@ -320,9 +320,11 @@ export const PatientIntakeForm = ({ formData, setFormData, addPatient: addPatien
     } finally { setSubmitting(false); }
   };
 
-  // Only allow digits in phone field
+  // Only allow digits, force 09 prefix
   const handlePhoneChange = (e) => {
-    const val = e.target.value.replace(/[^0-9]/g, '').slice(0, 11);
+    let val = e.target.value.replace(/[^0-9]/g, '').slice(0, 11);
+    if (val.length === 1 && val !== '0') val = '0';
+    if (val.length >= 2 && !val.startsWith('09')) val = '09' + val.slice(2);
     setForm({...form, phone: val});
     if (errors.phone) setErrors({...errors, phone: ''});
   };
