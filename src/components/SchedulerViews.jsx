@@ -35,6 +35,66 @@ const UrgencyBadge = ({ urgency }) => {
   );
 };
 
+// ─── PATIENT DETAIL MODAL ─────────────────────────────────────────────────────
+const PatientDetailModal = ({ patient, onClose }) => {
+  if (!patient) return null;
+  const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' }) : '—';
+  const rows = [
+    { label:'Queue #',      val: patient.ticket_number ? `#${patient.ticket_number}` : '—' },
+    { label:'Full Name',    val: patient.fullname },
+    { label:'Date of Birth',val: formatDate(patient.dob) },
+    { label:'Gender',       val: patient.gender || '—' },
+    { label:'Phone',        val: patient.phone || '—' },
+    { label:'Condition',    val: patient.condition },
+    { label:'Urgency',      val: null, badge: patient.urgency },
+    { label:'Arrived',      val: new Date(patient.arrival_time).toLocaleString('en-PH') },
+    { label:'Status',       val: patient.status === 'done' ? 'Consulted ✓' : 'Waiting' },
+  ];
+  if (patient.doctor_notes) rows.push({ label:'Doctor Notes', val: patient.doctor_notes });
+
+  return (
+    <div
+      onClick={onClose}
+      style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center', padding:'1rem' }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{ background:'#ffffff', borderRadius:'1.5rem', border:'1px solid rgba(34,197,94,0.2)', padding:'2rem', maxWidth:'420px', width:'100%', boxShadow:'0 20px 60px rgba(0,80,30,0.15)', maxHeight:'90vh', overflowY:'auto' }}
+      >
+        {/* Header */}
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'1.5rem' }}>
+          <div>
+            <p style={{ color:'#9ca3af', fontSize:'10px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.2em', margin:'0 0 4px' }}>Patient Details</p>
+            <h3 style={{ color:'#1a3a2a', fontWeight:900, fontSize:'1.3rem', margin:0 }}>{patient.fullname}</h3>
+          </div>
+          <button
+            onClick={onClose}
+            style={{ background:'rgba(239,68,68,0.1)', border:'1px solid rgba(239,68,68,0.2)', color:'#ef4444', borderRadius:'0.5rem', padding:'6px 10px', cursor:'pointer', fontWeight:700, fontSize:'11px' }}
+          >✕</button>
+        </div>
+
+        {/* Rows */}
+        <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem' }}>
+          {rows.map(row => (
+            <div key={row.label} style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', padding:'0.6rem 0.75rem', background:'#f0faf4', borderRadius:'0.75rem', gap:'1rem' }}>
+              <span style={{ color:'#9ca3af', fontSize:'10px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.1em', flexShrink:0 }}>{row.label}</span>
+              {row.badge
+                ? <UrgencyBadge urgency={row.badge}/>
+                : <span style={{ color:'#1a3a2a', fontSize:'12px', fontWeight:600, textAlign:'right', wordBreak:'break-word' }}>{row.val}</span>
+              }
+            </div>
+          ))}
+        </div>
+
+        <button
+          onClick={onClose}
+          style={{ width:'100%', marginTop:'1.5rem', background:'#16a34a', color:'white', border:'none', padding:'0.85rem', borderRadius:'0.75rem', fontWeight:700, fontSize:'12px', textTransform:'uppercase', letterSpacing:'0.1em', cursor:'pointer' }}
+        >Close</button>
+      </div>
+    </div>
+  );
+};
+
 // ─── ROLE SELECTION ───────────────────────────────────────────────────────────
 export const RoleSelectionScreen = ({ onSelect }) => {
   const [activeNav,  setActiveNav]  = React.useState(null); // 'login' | 'about' | 'contact'
@@ -529,10 +589,12 @@ export const LoginScreen = ({ role, onLogin, onBack, authError, authLoading }) =
 
 // ─── TRIAGE NURSE VIEW ────────────────────────────────────────────────────────
 export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: getSortedProp }) => {
-  const [search,   setSearch]   = React.useState('');
-  const [filter,   setFilter]   = React.useState('all');
-  const [updating, setUpdating] = React.useState(null);
-  const [ownPats,  setOwnPats]  = React.useState([]);
+  const [search,          setSearch]          = React.useState('');
+  const [filter,          setFilter]          = React.useState('all');
+  const [updating,        setUpdating]        = React.useState(null);
+  const [ownPats,         setOwnPats]         = React.useState([]);
+  const [selectedPatient, setSelectedPatient] = React.useState(null);
+  const [showDone,        setShowDone]        = React.useState(true);
 
   React.useEffect(() => {
     let channel;
@@ -579,13 +641,17 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
   patients.filter(p => p.status !== 'done').filter(shiftFilter).forEach(p => { if (counts[p.urgency] !== undefined) counts[p.urgency]++; });
 
   const sorted = getSortedPatients()
-    .filter(p => p.status !== 'done')
+    .filter(p => showDone ? true : p.status !== 'done')
     .filter(shiftFilter)
     .filter(p => (filter==='all' || p.urgency===filter) &&
       (p.fullname.toLowerCase().includes(search.toLowerCase()) || p.condition.toLowerCase().includes(search.toLowerCase())));
 
+  const doneCount    = getSortedPatients().filter(shiftFilter).filter(p => p.status === 'done').length;
+  const waitingCount = getSortedPatients().filter(shiftFilter).filter(p => p.status !== 'done').length;
+
   return (
     <div className="p-8 text-[#1a3a2a]">
+      <PatientDetailModal patient={selectedPatient} onClose={() => setSelectedPatient(null)}/>
       <div className="mb-6">
         <h2 className="text-2xl font-black text-[#1a3a2a]">Triage Dashboard</h2>
         <p className="text-green-600/60 text-[10px] uppercase tracking-[0.3em] font-bold mt-1">Manage Patient Urgency Levels</p>
@@ -629,10 +695,29 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
       {/* Queue */}
       <div className="dashboard-card p-8">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-[#1a3a2a] font-black text-xs uppercase tracking-widest">Live Priority Queue</h3>
-          <div className="animate-pulse flex items-center gap-2">
-            <div className="w-2 h-2 bg-red-500 rounded-full"/>
-            <span className="text-[10px] font-bold text-gray-400 tracking-widest">LIVE MONITOR</span>
+          <div>
+            <h3 className="text-[#1a3a2a] font-black text-xs uppercase tracking-widest">Live Priority Queue</h3>
+            <p className="text-gray-400 text-[11px] mt-1">
+              <span className="text-blue-400 font-bold">{waitingCount} waiting</span>
+              <span className="mx-2 text-gray-300">·</span>
+              <span className="text-green-500 font-bold">{doneCount} consulted</span>
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowDone(v => !v)}
+              className={`px-3 py-1.5 rounded-lg font-bold text-[10px] uppercase tracking-widest transition-all border ${
+                showDone
+                  ? 'bg-green-500/10 border-green-300 text-green-600'
+                  : 'bg-gray-100 border-gray-200 text-gray-400'
+              }`}
+            >
+              {showDone ? '✓ Showing Consulted' : 'Show Consulted'}
+            </button>
+            <div className="animate-pulse flex items-center gap-2">
+              <div className="w-2 h-2 bg-red-500 rounded-full"/>
+              <span className="text-[10px] font-bold text-gray-400 tracking-widest">LIVE</span>
+            </div>
           </div>
         </div>
         <div className="space-y-3">
@@ -641,27 +726,33 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
                 {search || filter !== 'all' ? 'No patients match your filter' : 'No Active Patients'}
               </div>
             : sorted.map((p, i) => (
-              <div key={p.id} className="p-5 bg-green-50/60 rounded-2xl border border-green-100 flex justify-between items-center gap-4">
+              <div key={p.id} className={`p-5 rounded-2xl border flex justify-between items-center gap-4 ${p.status === 'done' ? 'bg-gray-50/60 border-gray-200 opacity-70' : 'bg-green-50/60 border-green-100'}`}>
                 <div className="flex items-center gap-5 flex-1 min-w-0">
-                  <div className="text-2xl font-black text-green-200 shrink-0">{(i+1).toString().padStart(2,'0')}</div>
-                  <div className="min-w-0">
-                    <p className="font-bold text-[#1a3a2a] text-lg truncate">{p.fullname}</p>
-                    <p className="text-sm text-gray-400 italic truncate">"{p.condition}"</p>
+                  <div className={`text-2xl font-black shrink-0 ${p.status === 'done' ? 'text-gray-200' : 'text-green-200'}`}>{(i+1).toString().padStart(2,'0')}</div>
+                  <div className="min-w-0 cursor-pointer" onClick={() => setSelectedPatient(p)}>
+                    <div className="flex items-center gap-2">
+                      <p className="font-bold text-[#1a3a2a] text-lg truncate hover:text-green-600 transition-colors">{p.fullname}</p>
+                      {p.status === 'done' && <span className="px-2 py-0.5 bg-green-500/20 text-green-600 rounded text-[9px] font-black uppercase shrink-0">Consulted</span>}
+                    </div>
+                    <p className="text-sm text-gray-400 italic truncate hover:text-green-500 transition-colors">"{p.condition}"</p>
                     <p className="text-gray-400 text-[11px] mt-1 flex items-center gap-1">
                       <Clock size={10}/> {timeAgo(p.arrival_time)}
+                      <span className="ml-2 text-green-400 text-[10px] font-bold">· tap for details</span>
                     </p>
                   </div>
                 </div>
                 <div className="shrink-0">
-                  {updating === p.id
-                    ? <Loader2 size={16} className="text-green-400 animate-spin"/>
-                    : <select value={p.urgency} onChange={e => updateUrgency(p.id, e.target.value)}
-                        className="bg-white border border-green-200 text-[#1a3a2a] px-3 py-2 rounded-lg font-bold text-[11px] uppercase cursor-pointer">
-                        <option value="low">Low</option>
-                        <option value="medium">Medium</option>
-                        <option value="high">High</option>
-                        <option value="critical">Critical</option>
-                      </select>
+                  {p.status === 'done'
+                    ? <span className="text-green-500 text-[11px] font-black uppercase">✓ Done</span>
+                    : updating === p.id
+                      ? <Loader2 size={16} className="text-green-400 animate-spin"/>
+                      : <select value={p.urgency} onChange={e => updateUrgency(p.id, e.target.value)}
+                          className="bg-white border border-green-200 text-[#1a3a2a] px-3 py-2 rounded-lg font-bold text-[11px] uppercase cursor-pointer">
+                          <option value="low">Low</option>
+                          <option value="medium">Medium</option>
+                          <option value="high">High</option>
+                          <option value="critical">Critical</option>
+                        </select>
                   }
                 </div>
               </div>
@@ -701,11 +792,12 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
     });
   });
 
-  const [completing, setCompleting] = React.useState(false);
-  const [history,    setHistory]    = React.useState([]);
-  const [tab,        setTab]        = React.useState('queue');
-  const [notes,      setNotes]      = React.useState('');
-  const [shiftDoc,   setShiftDoc]   = React.useState('today');
+  const [completing,      setCompleting]      = React.useState(false);
+  const [history,         setHistory]         = React.useState([]);
+  const [tab,             setTab]             = React.useState('queue');
+  const [notes,           setNotes]           = React.useState('');
+  const [shiftDoc,        setShiftDoc]        = React.useState('today');
+  const [selectedPatient, setSelectedPatient] = React.useState(null);
 
   const sorted  = getSortedPatients().filter(p => p.status !== 'done');
   const current = sorted[0];
@@ -741,6 +833,7 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
 
   return (
     <div className="p-8 text-[#1a3a2a]">
+      <PatientDetailModal patient={selectedPatient} onClose={() => setSelectedPatient(null)}/>
       <div className="mb-6">
         <h2 className="text-2xl font-black text-[#1a3a2a]">Doctor Dashboard</h2>
         <p className="text-green-600/60 text-[10px] uppercase tracking-[0.3em] font-bold mt-1">Patient Consultation Queue</p>
@@ -768,7 +861,7 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
             <h3 className="text-gray-400 uppercase text-xs font-black tracking-widest mb-2">Now Consulting</h3>
             {current ? (
               <>
-                <h2 className="text-4xl font-bold text-[#1a3a2a] mb-3">{current.fullname}</h2>
+                <h2 className="text-4xl font-bold text-[#1a3a2a] mb-3 cursor-pointer hover:text-green-600 transition-colors" onClick={() => setSelectedPatient(current)}>{current.fullname}</h2>
                 <UrgencyBadge urgency={current.urgency}/>
                 <div className="p-4 bg-green-50 border border-green-100 rounded-xl text-gray-500 text-sm my-4 italic">"{current.condition}"</div>
                 <p className="text-gray-400 text-xs mb-5 flex items-center justify-center gap-1">
@@ -795,10 +888,10 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
             <h3 className="text-[#1a3a2a] font-black text-xs uppercase tracking-widest mb-4">Up Next ({queue.length})</h3>
             <div className="space-y-3 max-h-96 overflow-y-auto">
               {queue.map((p, i) => (
-                <div key={p.id} className="p-4 bg-green-50 rounded-2xl border border-green-100 flex items-center justify-between gap-3">
+                <div key={p.id} className="p-4 bg-green-50 rounded-2xl border border-green-100 flex items-center justify-between gap-3 cursor-pointer hover:border-green-300 transition-colors" onClick={() => setSelectedPatient(p)}>
                   <div className="text-xl font-black text-green-200 shrink-0">{(i+2).toString().padStart(2,'0')}</div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-[#1a3a2a] font-bold text-sm truncate">{p.fullname}</p>
+                    <p className="text-[#1a3a2a] font-bold text-sm truncate hover:text-green-600">{p.fullname}</p>
                     <p className="text-gray-400 text-xs italic truncate">"{p.condition}"</p>
                   </div>
                   <UrgencyBadge urgency={p.urgency}/>
@@ -824,7 +917,7 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
           </div>
           <div className="space-y-3">
             {history.filter(shiftFilterDoc).map(p => (
-              <div key={p.id} className="p-4 bg-green-50 rounded-2xl border border-green-100">
+              <div key={p.id} className="p-4 bg-green-50 rounded-2xl border border-green-100 cursor-pointer hover:border-green-300 transition-colors" onClick={() => setSelectedPatient(p)}>
                 <div className="flex justify-between items-start">
                   <div className="flex-1 min-w-0">
                     <p className="text-[#1a3a2a] font-bold truncate">{p.fullname}</p>
@@ -874,15 +967,16 @@ export const ManagerView = ({ patients: patientsProp }) => {
   }, []);
 
   const patients = (patientsProp && patientsProp.length > 0) ? patientsProp : ownPats;
-  const [tab,       setTab]       = React.useState('overview');
-  const [shiftMgr,  setShiftMgr]  = React.useState('today');
-  const [form,      setForm]      = React.useState({ fullName:'', username:'', password:'', role:'triage', email:'' });
-  const [staffList, setStaffList] = React.useState([]);
-  const [loading,   setLoading]   = React.useState(false);
-  const [created,   setCreated]   = React.useState(null);
-  const [error,     setError]     = React.useState('');
-  const [showPw,    setShowPw]    = React.useState(false);
-  const [search,    setSearch]    = React.useState('');
+  const [tab,             setTab]             = React.useState('overview');
+  const [shiftMgr,        setShiftMgr]        = React.useState('today');
+  const [form,            setForm]            = React.useState({ fullName:'', username:'', password:'', role:'triage', email:'' });
+  const [staffList,       setStaffList]       = React.useState([]);
+  const [loading,         setLoading]         = React.useState(false);
+  const [created,         setCreated]         = React.useState(null);
+  const [error,           setError]           = React.useState('');
+  const [showPw,          setShowPw]          = React.useState(false);
+  const [search,          setSearch]          = React.useState('');
+  const [selectedPatient, setSelectedPatient] = React.useState(null);
 
   const shiftFilterMgr = (p) => {
     const t = new Date(p.arrival_time), now = new Date();
@@ -959,6 +1053,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
 
   return (
     <div className="p-8 text-[#1a3a2a]">
+      <PatientDetailModal patient={selectedPatient} onClose={() => setSelectedPatient(null)}/>
       <div className="mb-6">
         <h2 className="text-2xl font-black text-[#1a3a2a]">Manager Dashboard</h2>
         <p className="text-green-600/60 text-[10px] uppercase tracking-[0.3em] font-bold mt-1">Staff, Analytics & Patient Overview</p>
@@ -1019,7 +1114,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
               </button>
             </div>
             {filteredByShift.slice(-5).reverse().map(p => (
-              <div key={p.id} className="border-l-2 border-green-500 pl-4 mb-3 flex justify-between items-center">
+              <div key={p.id} className="border-l-2 border-green-500 pl-4 mb-3 flex justify-between items-center cursor-pointer hover:bg-green-50 rounded-r-lg pr-2 transition-colors" onClick={() => setSelectedPatient(p)}>
                 <div>
                   <span className="text-[#1a3a2a] font-bold text-sm">{p.fullname}</span>
                   <span className="text-gray-400 text-xs"> — {p.condition}</span>
@@ -1110,7 +1205,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
           </div>
           <div className="space-y-3 max-h-[500px] overflow-y-auto">
             {filtPatients.map(p => (
-              <div key={p.id} className="p-5 bg-green-50 rounded-2xl border border-green-100 flex justify-between items-center gap-4">
+              <div key={p.id} className="p-5 bg-green-50 rounded-2xl border border-green-100 flex justify-between items-center gap-4 cursor-pointer hover:border-green-300 transition-colors" onClick={() => setSelectedPatient(p)}>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <p className="text-[#1a3a2a] font-bold truncate">{p.fullname}</p>
