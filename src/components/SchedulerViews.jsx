@@ -1,6 +1,6 @@
 import React from 'react';
 import { User, ClipboardList, Stethoscope, BarChart3, ShieldCheck, Activity, ArrowLeft,
-         UserPlus, Users, Trash2, Eye, EyeOff, AlertCircle, Loader2, Search,
+         UserPlus, Users, Trash2, AlertCircle, Loader2, Search, Edit2,
          Clock, CheckCircle, Download, TrendingUp } from 'lucide-react';
 
 // ─── SUPABASE ─────────────────────────────────────────────────────────────────
@@ -289,14 +289,14 @@ export const RoleSelectionScreen = ({ onSelect }) => {
 const QueueTicketInline = ({ patient, onBack }) => (
   <div className="min-h-screen flex flex-col items-center justify-center bg-[#f0faf4] p-8">
     <div className="text-center mb-8">
-      <h2 className="text-3xl font-black text-[#1a3a2a] italic tracking-tighter">HEALTH<span className="text-green-600">FLOW</span></h2>
+      <h2 className="text-3xl font-black text-[var(--text-primary,#1a3a2a)] italic tracking-tighter">HEALTH<span className="text-green-600">FLOW</span></h2>
       <p className="text-green-600/60 uppercase text-[10px] tracking-[0.3em] mt-2 font-bold">Registration Confirmed</p>
     </div>
     <div className="dashboard-card w-full max-w-sm overflow-hidden p-0">
       <div className="bg-green-500 py-2 text-center">
         <span className="text-white font-black text-[11px] uppercase tracking-widest">You are now in the queue</span>
       </div>
-      <div className="p-8 text-[#1a3a2a]">
+      <div className="p-8 text-[var(--text-primary,#1a3a2a)]">
         <div className="flex justify-center mb-6">
           <div className="w-16 h-16 rounded-full bg-green-100 border-2 border-green-400/40 flex items-center justify-center">
             <CheckCircle className="text-green-600" size={32} />
@@ -304,10 +304,10 @@ const QueueTicketInline = ({ patient, onBack }) => (
         </div>
         <div className="text-center mb-6">
           <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-1">Registered Patient</p>
-          <h2 className="text-3xl font-black text-[#1a3a2a]">{patient.fullname}</h2>
+          <h2 className="text-3xl font-black text-[var(--text-primary,#1a3a2a)]">{patient.fullname}</h2>
         </div>
         <div className="text-center border-2 border-dashed border-green-400/40 rounded-2xl p-6 mb-4 bg-green-50">
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 mb-2">Your Queue Number</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 mb-2">Your Ticket Number</p>
           <div className="text-6xl font-black text-green-600 leading-none">#{patient.ticket_number || '—'}</div>
           <p className="text-gray-500 text-[11px] mt-2">Remember this number</p>
         </div>
@@ -401,8 +401,8 @@ export const PatientIntakeForm = ({ formData, setFormData, addPatient: addPatien
     : null;
 
   return (
-    <div className="max-w-2xl mx-auto dashboard-card p-10 text-[#1a3a2a]">
-      <h2 className="text-2xl font-bold mb-8 flex items-center gap-3 border-b border-green-100 pb-4 text-[#1a3a2a]">
+    <div className="max-w-2xl mx-auto dashboard-card p-10 text-[var(--text-primary,#1a3a2a)]">
+      <h2 className="text-2xl font-bold mb-8 flex items-center gap-3 border-b border-green-100 pb-4 text-[var(--text-primary,#1a3a2a)]">
         <ClipboardList className="text-green-600"/> Patient Registration
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
@@ -540,16 +540,16 @@ export const LoginScreen = ({ role, onLogin, onBack, authError, authLoading }) =
   const isLoading = loading || authLoading;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f0faf4]">
-      <div className="dashboard-card w-full max-w-md p-10 text-[#1a3a2a]">
+    <div className="min-h-screen flex items-center justify-center" style={{background:"var(--bg-page)"}}>
+      <div className="dashboard-card w-full max-w-md p-10" style={{color:"var(--text-primary)"}}>
         <button onClick={onBack} className="text-gray-400 mb-6 flex items-center gap-1 text-xs uppercase font-bold hover:text-green-700">
           <ArrowLeft size={14}/> BACK
         </button>
         <div className="text-center mb-8">
-          <div className={`inline-block p-4 bg-green-50 rounded-2xl mb-4 ${THEME.color}`}>
+          <div className={`inline-block p-4 rounded-2xl mb-4 ${THEME.color}`} style={{background:"var(--bg-nav-active)"}}>
             <THEME.Icon size={32}/>
           </div>
-          <h2 className="text-xl font-bold uppercase tracking-widest text-[#1a3a2a]">{roleLabel} Authentication</h2>
+          <h2 className="text-xl font-bold uppercase tracking-widest" style={{color:"var(--text-primary)"}}>{roleLabel} Authentication</h2>
           <p className="text-gray-400 text-[10px] uppercase tracking-[0.2em] mt-1">Secure Access</p>
         </div>
 
@@ -568,12 +568,8 @@ export const LoginScreen = ({ role, onLogin, onBack, authError, authLoading }) =
           </div>
           <div className="relative">
             <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block ml-2">Password</label>
-            <input className="form-input pr-12" type={showPw ? 'text' : 'password'} placeholder="Enter your password"
+            <input className="form-input" type="password" placeholder="Enter your password"
               value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key==='Enter' && handleSubmit()} disabled={isLoading}/>
-            <button type="button" onClick={() => setShowPw(v=>!v)}
-              className="absolute right-3 bottom-3 text-gray-500 hover:text-white">
-              {showPw ? <EyeOff size={16}/> : <Eye size={16}/>}
-            </button>
           </div>
           <button onClick={handleSubmit} disabled={isLoading}
             className="w-full bg-green-600 hover:bg-green-500 disabled:opacity-60 text-white p-4 rounded-xl font-bold transition-all uppercase flex items-center justify-center gap-2">
@@ -629,7 +625,8 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
     setUpdating(null);
   };
 
-  const [shift, setShift] = React.useState('today');
+  const [shift,        setShift]        = React.useState('today');
+  const [statusFilter, setStatusFilter] = React.useState('all'); // 'all' | 'waiting' | 'done'
   const shiftFilter = (p) => {
     const t = new Date(p.arrival_time), now = new Date();
     if (shift === 'today') return t.toDateString() === now.toDateString();
@@ -641,7 +638,7 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
   patients.filter(p => p.status !== 'done').filter(shiftFilter).forEach(p => { if (counts[p.urgency] !== undefined) counts[p.urgency]++; });
 
   const sorted = getSortedPatients()
-    .filter(p => showDone ? true : p.status !== 'done')
+    .filter(p => statusFilter === 'waiting' ? p.status !== 'done' : statusFilter === 'done' ? p.status === 'done' : true)
     .filter(shiftFilter)
     .filter(p => (filter==='all' || p.urgency===filter) &&
       (p.fullname.toLowerCase().includes(search.toLowerCase()) || p.condition.toLowerCase().includes(search.toLowerCase())));
@@ -650,11 +647,11 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
   const waitingCount = getSortedPatients().filter(shiftFilter).filter(p => p.status !== 'done').length;
 
   return (
-    <div className="p-8 text-[#1a3a2a]">
+    <div className="p-8 text-[var(--text-primary,#1a3a2a)]">
       <PatientDetailModal patient={selectedPatient} onClose={() => setSelectedPatient(null)}/>
       <div className="mb-6">
-        <h2 className="text-2xl font-black text-[#1a3a2a]">Triage Dashboard</h2>
-        <p className="text-green-600/60 text-[10px] uppercase tracking-[0.3em] font-bold mt-1">Manage Patient Urgency Levels</p>
+        <h2 style={{color:"#0f172a",fontWeight:900,fontSize:"1.65rem",margin:0,lineHeight:1.1}}>Triage Dashboard</h2>
+        <p className="text-green-600/60 text-[10px] uppercase tracking-[0.3em] font-bold mt-2">Manage Patient Urgency Levels</p>
       </div>
 
       {/* Stats */}
@@ -675,8 +672,8 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
       {/* Search & filters */}
       <div className="flex gap-3 mb-6 flex-wrap">
         <div className="relative flex-1 min-w-44">
-          <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"/>
-          <input className="form-input pl-9" placeholder="Search patients..." value={search} onChange={e => setSearch(e.target.value)}/>
+          <Search size={13} style={{position:"absolute",left:"12px",top:"50%",transform:"translateY(-50%)",opacity:0.45,color:"var(--text-muted)",pointerEvents:"none"}}/>
+          <input className="form-input" style={{paddingLeft:"36px"}} placeholder="Search patients..." value={search} onChange={e => setSearch(e.target.value)}/>
         </div>
         <select className="form-input w-36" value={filter} onChange={e => setFilter(e.target.value)}>
           <option value="all">All Levels</option>
@@ -684,6 +681,11 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
           <option value="high">High</option>
           <option value="medium">Medium</option>
           <option value="low">Low</option>
+        </select>
+        <select className="form-input w-36" value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+          <option value="all">All Patients</option>
+          <option value="waiting">Waiting Only</option>
+          <option value="done">Finished Only</option>
         </select>
         <select className="form-input w-36" value={shift} onChange={e => setShift(e.target.value)}>
           <option value="today">Today</option>
@@ -696,7 +698,7 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
       <div className="dashboard-card p-8">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h3 className="text-[#1a3a2a] font-black text-xs uppercase tracking-widest">Live Priority Queue</h3>
+            <h3 className="text-[var(--text-primary,#1a3a2a)] font-black text-xs uppercase tracking-widest">Live Priority Queue</h3>
             <p className="text-gray-400 text-[11px] mt-1">
               <span className="text-blue-400 font-bold">{waitingCount} waiting</span>
               <span className="mx-2 text-gray-300">·</span>
@@ -726,12 +728,12 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
                 {search || filter !== 'all' ? 'No patients match your filter' : 'No Active Patients'}
               </div>
             : sorted.map((p, i) => (
-              <div key={p.id} className={`p-5 rounded-2xl border flex justify-between items-center gap-4 ${p.status === 'done' ? 'bg-gray-50/60 border-gray-200 opacity-70' : 'bg-green-50/60 border-green-100'}`}>
+              <div key={p.id} style={{background: p.status==='done' ? 'var(--bg-input)' : 'var(--bg-nav-active)', border: `1px solid ${p.status==='done' ? 'var(--border)' : 'var(--border-input)'}`, opacity: p.status==='done' ? 0.75 : 1}} className="p-5 rounded-2xl flex justify-between items-center gap-4">
                 <div className="flex items-center gap-5 flex-1 min-w-0">
                   <div className={`text-2xl font-black shrink-0 ${p.status === 'done' ? 'text-gray-200' : 'text-green-200'}`}>{(i+1).toString().padStart(2,'0')}</div>
                   <div className="min-w-0 cursor-pointer" onClick={() => setSelectedPatient(p)}>
                     <div className="flex items-center gap-2">
-                      <p className="font-bold text-[#1a3a2a] text-lg truncate hover:text-green-600 transition-colors">{p.fullname}</p>
+                      <p className="font-bold text-[var(--text-primary,#1a3a2a)] text-lg truncate hover:text-green-600 transition-colors">{p.fullname}</p>
                       {p.status === 'done' && <span className="px-2 py-0.5 bg-green-500/20 text-green-600 rounded text-[9px] font-black uppercase shrink-0">Consulted</span>}
                     </div>
                     <p className="text-sm text-gray-400 italic truncate hover:text-green-500 transition-colors">"{p.condition}"</p>
@@ -747,7 +749,7 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
                     : updating === p.id
                       ? <Loader2 size={16} className="text-green-400 animate-spin"/>
                       : <select value={p.urgency} onChange={e => updateUrgency(p.id, e.target.value)}
-                          className="bg-white border border-green-200 text-[#1a3a2a] px-3 py-2 rounded-lg font-bold text-[11px] uppercase cursor-pointer">
+                          className="bg-white border border-green-200 text-[var(--text-primary,#1a3a2a)] px-3 py-2 rounded-lg font-bold text-[11px] uppercase cursor-pointer">
                           <option value="low">Low</option>
                           <option value="medium">Medium</option>
                           <option value="high">High</option>
@@ -832,11 +834,11 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
   };
 
   return (
-    <div className="p-8 text-[#1a3a2a]">
+    <div className="p-8 text-[var(--text-primary,#1a3a2a)]">
       <PatientDetailModal patient={selectedPatient} onClose={() => setSelectedPatient(null)}/>
       <div className="mb-6">
-        <h2 className="text-2xl font-black text-[#1a3a2a]">Doctor Dashboard</h2>
-        <p className="text-green-600/60 text-[10px] uppercase tracking-[0.3em] font-bold mt-1">Patient Consultation Queue</p>
+        <h2 style={{color:"#0f172a",fontWeight:900,fontSize:"1.65rem",margin:0,lineHeight:1.1}}>Doctor Dashboard</h2>
+        <p className="text-green-600/60 text-[10px] uppercase tracking-[0.3em] font-bold mt-2">Patient Consultation Queue</p>
       </div>
 
       {/* Tabs */}
@@ -861,7 +863,7 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
             <h3 className="text-gray-400 uppercase text-xs font-black tracking-widest mb-2">Now Consulting</h3>
             {current ? (
               <>
-                <h2 className="text-4xl font-bold text-[#1a3a2a] mb-3 cursor-pointer hover:text-green-600 transition-colors" onClick={() => setSelectedPatient(current)}>{current.fullname}</h2>
+                <h2 className="text-4xl font-bold text-[var(--text-primary,#1a3a2a)] mb-3 cursor-pointer hover:text-green-600 transition-colors" onClick={() => setSelectedPatient(current)}>{current.fullname}</h2>
                 <UrgencyBadge urgency={current.urgency}/>
                 <div className="p-4 bg-green-50 border border-green-100 rounded-xl text-gray-500 text-sm my-4 italic">"{current.condition}"</div>
                 <p className="text-gray-400 text-xs mb-5 flex items-center justify-center gap-1">
@@ -885,13 +887,13 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
 
           {/* Queue list */}
           <div className="dashboard-card p-8">
-            <h3 className="text-[#1a3a2a] font-black text-xs uppercase tracking-widest mb-4">Up Next ({queue.length})</h3>
+            <h3 className="text-[var(--text-primary,#1a3a2a)] font-black text-xs uppercase tracking-widest mb-4">Up Next ({queue.length})</h3>
             <div className="space-y-3 max-h-96 overflow-y-auto">
               {queue.map((p, i) => (
                 <div key={p.id} className="p-4 bg-green-50 rounded-2xl border border-green-100 flex items-center justify-between gap-3 cursor-pointer hover:border-green-300 transition-colors" onClick={() => setSelectedPatient(p)}>
                   <div className="text-xl font-black text-green-200 shrink-0">{(i+2).toString().padStart(2,'0')}</div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-[#1a3a2a] font-bold text-sm truncate hover:text-green-600">{p.fullname}</p>
+                    <p className="text-[var(--text-primary,#1a3a2a)] font-bold text-sm truncate hover:text-green-600">{p.fullname}</p>
                     <p className="text-gray-400 text-xs italic truncate">"{p.condition}"</p>
                   </div>
                   <UrgencyBadge urgency={p.urgency}/>
@@ -908,7 +910,7 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
       {tab === 'history' && (
         <div className="dashboard-card p-8">
           <div className="flex justify-between items-center mb-4 border-b border-green-100 pb-4">
-            <h3 className="text-[#1a3a2a] font-black text-xs uppercase tracking-widest">Consultation History</h3>
+            <h3 className="text-[var(--text-primary,#1a3a2a)] font-black text-xs uppercase tracking-widest">Consultation History</h3>
             <select className="form-input w-36 text-xs" value={shiftDoc} onChange={e => setShiftDoc(e.target.value)}>
               <option value="today">Today</option>
               <option value="week">This Week</option>
@@ -920,7 +922,7 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
               <div key={p.id} className="p-4 bg-green-50 rounded-2xl border border-green-100 cursor-pointer hover:border-green-300 transition-colors" onClick={() => setSelectedPatient(p)}>
                 <div className="flex justify-between items-start">
                   <div className="flex-1 min-w-0">
-                    <p className="text-[#1a3a2a] font-bold truncate">{p.fullname}</p>
+                    <p className="text-[var(--text-primary,#1a3a2a)] font-bold truncate">{p.fullname}</p>
                     <p className="text-gray-400 text-xs italic truncate">"{p.condition}"</p>
                   </div>
                   <div className="text-right shrink-0 ml-3">
@@ -977,6 +979,56 @@ export const ManagerView = ({ patients: patientsProp }) => {
   const [showPw,          setShowPw]          = React.useState(false);
   const [search,          setSearch]          = React.useState('');
   const [selectedPatient, setSelectedPatient] = React.useState(null);
+  const [editStaff,       setEditStaff]       = React.useState(null); // { id, full_name, username, role, email }
+  const [editForm,        setEditForm]        = React.useState({ fullName:'', username:'', password:'', email:'' });
+  const [editLoading,     setEditLoading]     = React.useState(false);
+  const [editError,       setEditError]       = React.useState('');
+  const [editSuccess,     setEditSuccess]     = React.useState('');
+
+  const handleEditOpen = (s) => {
+    setEditStaff(s);
+    setEditForm({ fullName: s.full_name, username: s.username, password: '', email: s.email || '' });
+    setEditError(''); setEditSuccess('');
+  };
+
+  const handleEditSave = async () => {
+    setEditError(''); setEditSuccess('');
+    if (!editForm.fullName.trim()) return setEditError('Full name is required.');
+    if (!editForm.username.trim()) return setEditError('Username is required.');
+    setEditLoading(true);
+    try {
+      const sb     = await getSupabase();
+      const bcrypt = await import('bcryptjs');
+      // Check username conflict (exclude self)
+      const { data: ex } = await sb.from('users').select('id').eq('username', editForm.username.trim()).neq('id', editStaff.id).limit(1);
+      if (ex?.length > 0) { setEditError('Username already taken.'); setEditLoading(false); return; }
+      const updates = { full_name: editForm.fullName.trim(), username: editForm.username.trim() };
+      if (editForm.password.length >= 6) {
+        updates.password = await bcrypt.hash(editForm.password, 12);
+      } else if (editForm.password.length > 0 && editForm.password.length < 6) {
+        setEditError('New password must be at least 6 characters.'); setEditLoading(false); return;
+      }
+      const { error: ue } = await sb.from('users').update(updates).eq('id', editStaff.id);
+      if (ue) throw ue;
+      // Send updated credentials by email if email provided
+      if (editForm.email.includes('@')) {
+        const emailjs = await import('@emailjs/browser');
+        await emailjs.send('service_7uic23n','template_dq3c8lx',{
+          to_email: editForm.email.trim(),
+          to_name:  editForm.fullName.trim(),
+          role:     { triage:'Nurse', doctor:'Doctor', manager:'Manager' }[editStaff.role] || editStaff.role,
+          username: editForm.username.trim(),
+          password: editForm.password || '(unchanged)',
+        },'J3wTv46GcVJ6LLie3');
+        setEditSuccess('Account updated and credentials sent to ' + editForm.email.trim());
+      } else {
+        setEditSuccess('Account updated successfully.');
+      }
+      loadStaff();
+      setTimeout(() => setEditStaff(null), 1800);
+    } catch(err) { setEditError('Failed to update. Try again.'); console.error(err);
+    } finally { setEditLoading(false); }
+  };
 
   const shiftFilterMgr = (p) => {
     const t = new Date(p.arrival_time), now = new Date();
@@ -987,7 +1039,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
 
   const loadStaff = React.useCallback(async () => {
     const sb = await getSupabase();
-    const { data } = await sb.from('users').select('id,username,role,full_name,created_at').neq('role','manager').order('created_at',{ascending:false});
+    const { data } = await sb.from('users').select('id,username,role,full_name,created_at').order('created_at',{ascending:false});
     if (data) setStaffList(data);
   },[]);
 
@@ -1011,7 +1063,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
       const emailjs = await import('@emailjs/browser');
       await emailjs.send('service_7uic23n','template_dq3c8lx',{
         to_email:form.email.trim(), to_name:form.fullName.trim(),
-        role:{triage:'Nurse',doctor:'Doctor'}[form.role],
+        role:{triage:'Nurse',doctor:'Doctor',manager:'Manager'}[form.role],
         username:form.username.trim(), password:form.password,
       },'J3wTv46GcVJ6LLie3');
       setCreated({ ...form });
@@ -1028,6 +1080,42 @@ export const ManagerView = ({ patients: patientsProp }) => {
     loadStaff();
   };
 
+  const handleUpdate = async () => {
+    setEditError(''); setEditSuccess('');
+    if (!editForm.fullName.trim())  return setEditError('Full name is required.');
+    if (!editForm.username.trim())  return setEditError('Username is required.');
+    if (!editForm.email.includes('@')) return setEditError('Valid email required.');
+    setEditLoading(true);
+    try {
+      const sb = await getSupabase();
+      // Check username not taken by someone else
+      const { data: ex } = await sb.from('users').select('id').eq('username', editForm.username.trim()).neq('id', editStaff.id).limit(1);
+      if (ex?.length > 0) { setEditError('Username already taken.'); setEditLoading(false); return; }
+      const updateData = { full_name: editForm.fullName.trim(), username: editForm.username.trim() };
+      if (editForm.password && editForm.password.length >= 6) {
+        const bcrypt = await import('bcryptjs');
+        updateData.password = await bcrypt.hash(editForm.password, 12);
+      }
+      const { error: ue } = await sb.from('users').update(updateData).eq('id', editStaff.id);
+      if (ue) throw ue;
+      // Resend credentials via email if email provided
+      if (editForm.email) {
+        const emailjs = await import('@emailjs/browser');
+        await emailjs.send('service_7uic23n','template_dq3c8lx',{
+          to_email: editForm.email.trim(),
+          to_name:  editForm.fullName.trim(),
+          role:     {triage:'Nurse', doctor:'Doctor', manager:'Manager'}[editStaff.role],
+          username: editForm.username.trim(),
+          password: editForm.password || '(unchanged)',
+        },'J3wTv46GcVJ6LLie3');
+      }
+      setEditSuccess('Account updated!' + (editForm.email ? ' Credentials re-sent to email.' : ''));
+      loadStaff();
+      setTimeout(() => { setEditStaff(null); setEditSuccess(''); }, 2000);
+    } catch(err) { setEditError('Failed to update. Try again.'); console.error(err);
+    } finally { setEditLoading(false); }
+  };
+
   const exportCSV = () => {
     const csv = [['Name','Condition','Urgency','Gender','Phone','Arrival','Status'],
       ...patients.map(p=>[p.fullname,p.condition,p.urgency,p.gender||'',p.phone||'',new Date(p.arrival_time).toLocaleString(),p.status||'waiting'])
@@ -1042,7 +1130,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
   filteredByShift.forEach(p=>{ if(uc[p.urgency]!==undefined) uc[p.urgency]++; });
   const total = filteredByShift.length || 1;
 
-  const ROLE_COLOR = { triage:'text-green-600', doctor:'text-emerald-600' };
+  const ROLE_COLOR = { triage:'text-green-600', doctor:'text-emerald-600', manager:'text-amber-600' };
   const ROLE_LABEL = { triage:'Nurse', doctor:'Doctor', manager:'Manager' };
 
   const filtStaff    = staffList.filter(s=>s.full_name.toLowerCase().includes(search.toLowerCase())||s.username.toLowerCase().includes(search.toLowerCase()));
@@ -1052,11 +1140,11 @@ export const ManagerView = ({ patients: patientsProp }) => {
   const TAB_LABELS = { overview:'Overview', analytics:'Analytics', patients:'Patient Records', create:'+ Create Account', staff:'Staff List' };
 
   return (
-    <div className="p-8 text-[#1a3a2a]">
+    <div className="p-8 text-[var(--text-primary,#1a3a2a)]">
       <PatientDetailModal patient={selectedPatient} onClose={() => setSelectedPatient(null)}/>
       <div className="mb-6">
-        <h2 className="text-2xl font-black text-[#1a3a2a]">Manager Dashboard</h2>
-        <p className="text-green-600/60 text-[10px] uppercase tracking-[0.3em] font-bold mt-1">Staff, Analytics & Patient Overview</p>
+        <h2 style={{color:"#0f172a",fontWeight:900,fontSize:"1.65rem",margin:0,lineHeight:1.1}}>Manager Dashboard</h2>
+        <p className="text-green-600/60 text-[10px] uppercase tracking-[0.3em] font-bold mt-2">Staff, Analytics & Patient Overview</p>
       </div>
 
       {/* Tabs */}
@@ -1107,7 +1195,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
 
           <div className="dashboard-card p-8">
             <div className="flex justify-between items-center mb-4 border-b border-green-100 pb-4">
-              <h3 className="text-[#1a3a2a] font-black text-xs uppercase tracking-widest">Recent Activity</h3>
+              <h3 className="text-[var(--text-primary,#1a3a2a)] font-black text-xs uppercase tracking-widest">Recent Activity</h3>
               <button onClick={exportCSV}
                 className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-600 border border-green-200 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-green-100 transition-all">
                 <Download size={13}/> Export CSV
@@ -1116,7 +1204,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
             {filteredByShift.slice(-5).reverse().map(p => (
               <div key={p.id} className="border-l-2 border-green-500 pl-4 mb-3 flex justify-between items-center cursor-pointer hover:bg-green-50 rounded-r-lg pr-2 transition-colors" onClick={() => setSelectedPatient(p)}>
                 <div>
-                  <span className="text-[#1a3a2a] font-bold text-sm">{p.fullname}</span>
+                  <span className="text-[var(--text-primary,#1a3a2a)] font-bold text-sm">{p.fullname}</span>
                   <span className="text-gray-400 text-xs"> — {p.condition}</span>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
@@ -1149,7 +1237,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
           </div>
 
           <div className="dashboard-card p-8">
-            <h3 className="text-[#1a3a2a] font-black text-xs uppercase tracking-widest mb-6 flex items-center gap-2">
+            <h3 className="text-[var(--text-primary,#1a3a2a)] font-black text-xs uppercase tracking-widest mb-6 flex items-center gap-2">
               <TrendingUp size={15} className="text-amber-400"/> Urgency Distribution
             </h3>
             {[
@@ -1193,22 +1281,22 @@ export const ManagerView = ({ patients: patientsProp }) => {
       {tab === 'patients' && (
         <div className="dashboard-card p-8">
           <div className="flex justify-between items-center mb-4 border-b border-green-100 pb-4">
-            <h3 className="text-[#1a3a2a] font-black text-xs uppercase tracking-widest">All Patient Records</h3>
+            <h3 className="text-[var(--text-primary,#1a3a2a)] font-black text-xs uppercase tracking-widest">All Patient Records</h3>
             <button onClick={exportCSV}
               className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-600 border border-green-200 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-green-100 transition-all">
               <Download size={13}/> Export CSV
             </button>
           </div>
           <div className="relative mb-4">
-            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"/>
-            <input className="form-input pl-9" placeholder="Search patients..." value={search} onChange={e=>setSearch(e.target.value)}/>
+            <Search size={13} style={{position:"absolute",left:"12px",top:"50%",transform:"translateY(-50%)",opacity:0.45,color:"var(--text-muted)",pointerEvents:"none"}}/>
+            <input className="form-input" style={{paddingLeft:"36px"}} placeholder="Search patients..." value={search} onChange={e=>setSearch(e.target.value)}/>
           </div>
           <div className="space-y-3 max-h-[500px] overflow-y-auto">
             {filtPatients.map(p => (
               <div key={p.id} className="p-5 bg-green-50 rounded-2xl border border-green-100 flex justify-between items-center gap-4 cursor-pointer hover:border-green-300 transition-colors" onClick={() => setSelectedPatient(p)}>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <p className="text-[#1a3a2a] font-bold truncate">{p.fullname}</p>
+                    <p className="text-[var(--text-primary,#1a3a2a)] font-bold truncate">{p.fullname}</p>
                     {p.status==='done' && <span className="px-2 py-0.5 bg-green-500/20 text-green-400 rounded text-[9px] font-black uppercase shrink-0">Done</span>}
                   </div>
                   <p className="text-gray-500 text-xs italic truncate">"{p.condition}"</p>
@@ -1233,17 +1321,17 @@ export const ManagerView = ({ patients: patientsProp }) => {
               <div className="flex items-center gap-4 mb-6">
                 <div className="p-3 bg-green-500/10 rounded-xl"><ShieldCheck className="text-green-400" size={24}/></div>
                 <div>
-                  <h3 className="text-[#1a3a2a] font-black text-lg">Account Created!</h3>
+                  <h3 className="text-[var(--text-primary,#1a3a2a)] font-black text-lg">Account Created!</h3>
                   <p className="text-green-400 text-xs mt-1">Credentials sent to {created.email}</p>
                 </div>
               </div>
               <div className="bg-green-50 border border-green-100 rounded-2xl p-6 space-y-3 mb-4">
                 {[
                   { label:'Role',     val:ROLE_LABEL[created.role], cls:'text-green-600'            },
-                  { label:'Name',     val:created.fullName,         cls:'text-[#1a3a2a]'            },
-                  { label:'Email',    val:created.email,            cls:'text-[#1a3a2a]'            },
-                  { label:'Username', val:created.username,         cls:'text-[#1a3a2a] font-mono' },
-                  { label:'Password', val:created.password,         cls:'text-[#1a3a2a] font-mono' },
+                  { label:'Name',     val:created.fullName,         cls:'text-[var(--text-primary,#1a3a2a)]'            },
+                  { label:'Email',    val:created.email,            cls:'text-[var(--text-primary,#1a3a2a)]'            },
+                  { label:'Username', val:created.username,         cls:'text-[var(--text-primary,#1a3a2a)] font-mono' },
+                  { label:'Password', val:created.password,         cls:'text-[var(--text-primary,#1a3a2a)] font-mono' },
                 ].map(row => (
                   <div key={row.label} className="flex justify-between items-center">
                     <span className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">{row.label}</span>
@@ -1261,7 +1349,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
             </div>
           ) : (
             <div className="dashboard-card p-8">
-              <h3 className="text-[#1a3a2a] font-black text-lg mb-6 flex items-center gap-2">
+              <h3 className="text-[var(--text-primary,#1a3a2a)] font-black text-lg mb-6 flex items-center gap-2">
                 <UserPlus className="text-green-600" size={22}/> New Staff Account
               </h3>
               {error && (
@@ -1276,6 +1364,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
                   <select className="form-input" value={form.role} onChange={e=>setForm({...form,role:e.target.value})}>
                     <option value="triage">Nurse (Triage)</option>
                     <option value="doctor">Doctor</option>
+                    <option value="manager">Manager</option>
                   </select>
                 </div>
                 {[
@@ -1293,12 +1382,8 @@ export const ManagerView = ({ patients: patientsProp }) => {
                 <div>
                   <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block ml-2">Password</label>
                   <div className="relative">
-                    <input className="form-input pr-12" type={showPw?'text':'password'} placeholder="Min. 6 characters"
+                    <input className="form-input" type="password" placeholder="Min. 6 characters"
                       value={form.password} onChange={e=>setForm({...form,password:e.target.value})}/>
-                    <button type="button" onClick={()=>setShowPw(v=>!v)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white">
-                      {showPw ? <EyeOff size={16}/> : <Eye size={16}/>}
-                    </button>
                   </div>
                 </div>
                 <button onClick={handleCreate} disabled={loading}
@@ -1315,38 +1400,105 @@ export const ManagerView = ({ patients: patientsProp }) => {
       {tab === 'staff' && (
         <div className="dashboard-card p-8">
           <div className="flex justify-between items-center mb-4 border-b border-green-100 pb-4">
-            <h3 className="text-[#1a3a2a] font-black text-xs uppercase tracking-widest flex items-center gap-2">
+            <h3 className="text-[var(--text-primary,#1a3a2a)] font-black text-xs uppercase tracking-widest flex items-center gap-2">
               <Users size={15} className="text-green-600"/> All Staff
             </h3>
           </div>
           <div className="relative mb-4">
-            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"/>
-            <input className="form-input pl-9" placeholder="Search staff..." value={search} onChange={e=>setSearch(e.target.value)}/>
+            <Search size={13} style={{position:"absolute",left:"12px",top:"50%",transform:"translateY(-50%)",opacity:0.45,color:"var(--text-muted)",pointerEvents:"none"}}/>
+            <input className="form-input" style={{paddingLeft:"36px"}} placeholder="Search staff..." value={search} onChange={e=>setSearch(e.target.value)}/>
           </div>
           <div className="space-y-3">
             {filtStaff.map(s => (
-              <div key={s.id} className="p-5 bg-green-50 rounded-2xl border border-green-100 flex justify-between items-center">
-                <div className="flex items-center gap-4">
-                  <div className={`p-2 bg-green-50 rounded-xl ${ROLE_COLOR[s.role]||'text-green-600'}`}>
-                    {s.role==='triage' ? <Activity size={16}/> : <Stethoscope size={16}/>}
+              <div key={s.id} className="p-5 bg-green-50 rounded-2xl border border-green-100">
+                <div className="flex justify-between items-start mb-3">
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className={`p-2 bg-green-50 rounded-xl ${ROLE_COLOR[s.role]||'text-green-600'}`}>
+                      {s.role==='triage' ? <Activity size={16}/> : s.role==='doctor' ? <Stethoscope size={16}/> : <BarChart3 size={16}/>}
+                    </div>
+                    <div>
+                      <p className="text-[var(--text-primary,#1a3a2a)] font-bold">{s.full_name}</p>
+                      <p className="text-gray-500 text-xs font-mono">{s.username}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[#1a3a2a] font-bold">{s.full_name}</p>
-                    <p className="text-gray-500 text-xs font-mono">{s.username}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
                   <span className={`px-3 py-1 bg-green-50 rounded-lg text-[10px] font-black uppercase tracking-widest ${ROLE_COLOR[s.role]||'text-green-600'}`}>
                     {ROLE_LABEL[s.role]}
                   </span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 mb-3 bg-white rounded-lg p-2 text-[10px]">
+                  <div>
+                    <p className="text-gray-500 font-bold uppercase tracking-wider mb-1">Username</p>
+                    <p className="text-[var(--text-primary,#1a3a2a)] font-mono font-bold">{s.username}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 font-bold uppercase tracking-wider mb-1">Password</p>
+                    <p className="text-[var(--text-primary,#1a3a2a)] font-mono font-bold">••••••••</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 justify-end">
+                  <button onClick={() => handleEditOpen(s)}
+                    className="p-2 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl hover:bg-blue-500/20 transition-all" title="Edit account">
+                    <Edit2 size={14}/>
+                  </button>
                   <button onClick={() => handleDelete(s.id, s.username)}
-                    className="p-2 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl hover:bg-red-500/20 transition-all">
+                    className="p-2 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl hover:bg-red-500/20 transition-all" title="Delete account">
                     <Trash2 size={14}/>
                   </button>
                 </div>
               </div>
             ))}
             {filtStaff.length === 0 && <p className="text-center text-gray-400 text-xs font-bold uppercase py-8 tracking-widest">No staff found</p>}
+          </div>
+        </div>
+      )}
+
+      {/* EDIT STAFF MODAL */}
+      {editStaff && (
+        <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.6)', zIndex:9998, display:'flex', alignItems:'center', justifyContent:'center', padding:'1rem' }}>
+          <div className="dashboard-card" style={{ width:'100%', maxWidth:'440px', padding:'2rem', position:'relative' }}>
+            <button onClick={() => setEditStaff(null)} style={{ position:'absolute', top:'1rem', right:'1rem', background:'none', border:'none', cursor:'pointer', color:'var(--text-muted)', fontSize:'18px' }}>✕</button>
+            <h3 className="text-[var(--text-primary,#1a3a2a)] font-black text-lg mb-1 flex items-center gap-2">
+              <Edit2 className="text-blue-500" size={20}/> Edit Account
+            </h3>
+            <p className="text-gray-500 text-xs mb-5">Role: <span className="font-bold uppercase">{ROLE_LABEL[editStaff.role]}</span></p>
+
+            {editError && (
+              <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 mb-4">
+                <AlertCircle size={14} className="text-red-400 shrink-0"/>
+                <p className="text-red-400 text-xs font-bold">{editError}</p>
+              </div>
+            )}
+            {editSuccess && (
+              <div className="flex items-center gap-2 bg-green-500/10 border border-green-500/30 rounded-xl px-4 py-3 mb-4">
+                <ShieldCheck size={14} className="text-green-500 shrink-0"/>
+                <p className="text-green-500 text-xs font-bold">{editSuccess}</p>
+              </div>
+            )}
+
+            <div className="space-y-4">
+              {[
+                { label:'Full Name',   field:'fullName',  ph:'Full name',       type:'text'  },
+                { label:'Username',    field:'username',  ph:'Username',         type:'text'  },
+                { label:'Email (for resending credentials)', field:'email', ph:'staff@email.com', type:'email' },
+                { label:'New Password (leave blank to keep)', field:'password', ph:'Min. 6 characters', type:'password' },
+              ].map(f => (
+                <div key={f.field}>
+                  <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block ml-2">{f.label}</label>
+                  <input className="form-input" type={f.type} placeholder={f.ph}
+                    value={editForm[f.field]} onChange={e => setEditForm({...editForm, [f.field]: e.target.value})}/>
+                </div>
+              ))}
+              <div className="flex gap-3 pt-2">
+                <button onClick={() => setEditStaff(null)}
+                  className="flex-1 border border-gray-200 text-gray-400 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-gray-50 transition-all">
+                  Cancel
+                </button>
+                <button onClick={handleEditSave} disabled={editLoading}
+                  className="flex-2 w-full bg-green-600 hover:bg-green-500 disabled:opacity-60 text-white py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2">
+                  {editLoading ? <><Loader2 size={14} className="animate-spin"/> Saving...</> : <><ShieldCheck size={14}/> Save & Resend</>}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

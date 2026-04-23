@@ -32,7 +32,7 @@ export function useAuth() {
     sessionStorage.clear();
     setCurrentUser(null);
     setIsLoggedIn(false);
-    if (timedOut) setTimeout(() => alert('You have been logged out due to inactivity.'), 100);
+    // No alert shown — user is silently redirected to landing page on timeout
   }, []);
 
   const resetTimer = useCallback(() => {

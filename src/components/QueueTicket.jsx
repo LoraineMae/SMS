@@ -47,7 +47,7 @@ export const QueueTicket = ({ patient, onBack }) => {
 
           {/* Queue number */}
           <div style={{ textAlign:'center', background:'rgba(34,197,94,0.06)', border:'2px dashed rgba(34,197,94,0.3)', borderRadius:'1rem', padding:'1.5rem', marginBottom:'1.5rem' }}>
-            <p style={{ color:'#6b7280', fontSize:'10px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.3em', margin:'0 0 8px' }}>Your Queue Number</p>
+            <p style={{ color:'#6b7280', fontSize:'10px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.3em', margin:'0 0 8px' }}>Your Ticket Number</p>
             <div style={{ fontSize:'4rem', fontWeight:900, color:'#16a34a', lineHeight:1 }}>
               #{patient.ticket_number || '—'}
             </div>

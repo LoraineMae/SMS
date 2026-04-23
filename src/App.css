@@ -41,35 +41,38 @@
    DARK MODE
 ══════════════════════════════════════════════════════════ */
 [data-theme="dark"] {
-  --bg-page:        #0d1f17;
-  --bg-card:        #132212;
-  --bg-card-grad:   linear-gradient(145deg, #1a2e1e, #0f1f14);
-  --bg-input:       rgba(20, 40, 28, 0.9);
-  --bg-sidebar:     #0f1f14;
-  --bg-header:      #0f1f14;
-  --bg-nav-active:  rgba(34, 197, 94, 0.15);
+  /* Soft black base with very subtle green tint */
+  --bg-page:        #111614;
+  --bg-card:        #191e1b;
+  --bg-card-grad:   linear-gradient(145deg, #1e2520, #161b18);
+  --bg-input:       rgba(255, 255, 255, 0.04);
+  --bg-sidebar:     #0e1310;
+  --bg-header:      #0e1310;
+  --bg-nav-active:  rgba(34, 197, 94, 0.12);
 
-  --text-primary:   #e8f5ee;
-  --text-secondary: #86c9a0;
-  --text-muted:     #8faa98;
-  --text-faint:     #506858;
+  /* Text — soft white with gentle green tint */
+  --text-primary:   #e4efe8;
+  --text-secondary: #7faa8f;
+  --text-muted:     #566d5e;
+  --text-faint:     #3a4d40;
 
   --accent-green:      #22c55e;
   --accent-green-dark: #16a34a;
 
-  --border:         rgba(34, 197, 94, 0.12);
-  --border-input:   rgba(34, 197, 94, 0.20);
-  --border-sidebar: rgba(34, 197, 94, 0.10);
+  /* Borders — very subtle green */
+  --border:         rgba(34, 197, 94, 0.09);
+  --border-input:   rgba(34, 197, 94, 0.15);
+  --border-sidebar: rgba(34, 197, 94, 0.08);
 
-  --shadow-dark:    rgba(0, 0, 0, 0.40);
-  --shadow-light:   rgba(34, 197, 94, 0.03);
-  --shadow-card:    6px 6px 20px rgba(0,0,0,0.4), -2px -2px 8px rgba(34,197,94,0.04);
+  --shadow-dark:    rgba(0, 0, 0, 0.5);
+  --shadow-light:   rgba(34, 197, 94, 0.02);
+  --shadow-card:    4px 4px 16px rgba(0,0,0,0.45), -1px -1px 6px rgba(34,197,94,0.03);
 
-  --timeout-bg:     #132212;
-  --select-bg:      #1a2e1e;
+  --timeout-bg:     #191e1b;
+  --select-bg:      #1e2520;
 
   --toggle-bg:      #22c55e;
-  --toggle-knob:    #0d1f17;
+  --toggle-knob:    #111614;
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -274,4 +277,149 @@ select.form-input option {
   .mobile-overlay         { display: block !important; }
   /* Stack 2-col grids */
   .md\:grid-cols-2        { grid-template-columns: 1fr !important; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   DARK MODE — DASHBOARD CONTENT AREAS
+══════════════════════════════════════════════════════════ */
+[data-theme="dark"] .p-8,
+[data-theme="dark"] .p-5 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .space-y-3 > div,
+[data-theme="dark"] .space-y-4 > div {
+  border-color: var(--border) !important;
+}
+
+/* Cards in dark mode */
+[data-theme="dark"] .bg-green-50\/60   { background-color: rgba(34,197,94,0.05) !important; }
+[data-theme="dark"] .bg-green-50        { background-color: rgba(34,197,94,0.06) !important; }
+[data-theme="dark"] .border-green-100   { border-color: rgba(34,197,94,0.1) !important; }
+[data-theme="dark"] .border-green-200   { border-color: rgba(34,197,94,0.15) !important; }
+[data-theme="dark"] .bg-green-100       { background-color: rgba(34,197,94,0.12) !important; }
+
+/* Text in dark mode */
+[data-theme="dark"] .text-\[\#1a3a2a\],
+[data-theme="dark"] .text-\[var\(--text-primary\,\#1a3a2a\)\] { color: var(--text-primary) !important; }
+[data-theme="dark"] .text-gray-400      { color: var(--text-muted) !important; }
+[data-theme="dark"] .text-gray-500      { color: var(--text-muted) !important; }
+[data-theme="dark"] .text-gray-600      { color: var(--text-secondary) !important; }
+
+/* Select dropdowns in dark mode */
+[data-theme="dark"] select.form-input,
+[data-theme="dark"] select {
+  background: var(--bg-input) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-input) !important;
+}
+
+/* Tabs in dark mode */
+[data-theme="dark"] .bg-green-600 { background-color: #16a34a !important; }
+
+/* Urgency select in nurse dashboard */
+[data-theme="dark"] .bg-white.border.border-green-200 {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-input) !important;
+}
+
+/* Search icon opacity in dark mode */
+[data-theme="dark"] .text-gray-500 svg { opacity: 0.5; }
+
+/* ══════════════════════════════════════════════════════════
+   DARK MODE — COMPREHENSIVE OVERRIDES
+   Ensures ALL pages/components follow the theme
+══════════════════════════════════════════════════════════ */
+
+/* Login screen page bg */
+[data-theme="dark"] .min-h-screen {
+  background: var(--bg-page);
+}
+
+/* Patient intake page */
+[data-theme="dark"] .page-padding {
+  background: var(--bg-page);
+  color: var(--text-primary);
+}
+
+/* All cards including login card */
+[data-theme="dark"] .dashboard-card {
+  background: var(--bg-card-grad) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Labels inside cards */
+[data-theme="dark"] label { color: var(--text-muted) !important; }
+[data-theme="dark"] .text-gray-400 { color: var(--text-muted) !important; }
+[data-theme="dark"] .text-gray-500 { color: var(--text-muted) !important; }
+[data-theme="dark"] .text-gray-600 { color: var(--text-secondary) !important; }
+
+/* Patient rows in nurse/manager */
+[data-theme="dark"] .bg-green-50\/60  { background: rgba(34,197,94,0.05) !important; border-color: rgba(34,197,94,0.1) !important; }
+[data-theme="dark"] .bg-green-50      { background: rgba(34,197,94,0.06) !important; }
+[data-theme="dark"] .border-green-100 { border-color: rgba(34,197,94,0.1) !important; }
+[data-theme="dark"] .border-green-200 { border-color: rgba(34,197,94,0.15) !important; }
+[data-theme="dark"] .border-gray-200  { border-color: var(--border) !important; }
+[data-theme="dark"] .bg-gray-50\/60   { background: rgba(255,255,255,0.03) !important; }
+[data-theme="dark"] .bg-gray-50       { background: rgba(255,255,255,0.04) !important; }
+[data-theme="dark"] .bg-gray-100      { background: rgba(255,255,255,0.06) !important; }
+[data-theme="dark"] .bg-white         { background: var(--bg-card) !important; }
+
+/* Urgency select dropdown in nurse dashboard */
+[data-theme="dark"] select.bg-white,
+[data-theme="dark"] .bg-white.border.border-green-200 {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-input) !important;
+}
+
+/* Tabs */
+[data-theme="dark"] .bg-green-50.text-gray-400 { background: rgba(34,197,94,0.06) !important; }
+
+/* Amber/info boxes */
+[data-theme="dark"] .bg-amber-50  { background: rgba(245,158,11,0.08) !important; }
+[data-theme="dark"] .border-amber-200 { border-color: rgba(245,158,11,0.2) !important; }
+
+/* Stats cards top border accent — keep colors */
+[data-theme="dark"] .border-t-red-500   { border-top-color: #ef4444 !important; }
+[data-theme="dark"] .border-t-amber-500 { border-top-color: #f59e0b !important; }
+[data-theme="dark"] .border-t-blue-500  { border-top-color: #3b82f6 !important; }
+[data-theme="dark"] .border-t-green-500 { border-top-color: #22c55e !important; }
+
+/* Bar chart track */
+[data-theme="dark"] .bg-green-100 { background: rgba(34,197,94,0.08) !important; }
+
+/* Text primary consistency */
+[data-theme="dark"] .text-\[var\(--text-primary\,\#1a3a2a\)\] { color: var(--text-primary) !important; }
+
+/* Error states */
+[data-theme="dark"] .text-red-400 { color: #f87171 !important; }
+[data-theme="dark"] .bg-red-500\/10 { background: rgba(239,68,68,0.12) !important; }
+
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE FIXES — DASHBOARD CONTENT
+══════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  .grid.grid-cols-4       { grid-template-columns: repeat(2, 1fr) !important; }
+  .grid.grid-cols-3       { grid-template-columns: repeat(1, 1fr) !important; }
+  .grid-cols-4            { grid-template-columns: repeat(2, 1fr) !important; }
+  .grid-cols-3            { grid-template-columns: repeat(1, 1fr) !important; }
+  .flex.gap-3.mb-6        { flex-wrap: wrap !important; }
+  .flex.gap-2.mb-6        { flex-wrap: wrap !important; }
+  .p-8                    { padding: 1rem !important; }
+  .p-10                   { padding: 1.5rem !important; }
+  .text-6xl               { font-size: 2.5rem !important; }
+  .text-4xl               { font-size: 2rem !important; }
+  .max-w-md               { max-width: 100% !important; margin: 0 1rem !important; }
+  .max-w-lg               { max-width: 100% !important; }
+  /* Nav links wrap */
+  .flex.gap-2.mb-6.flex-wrap { gap: 0.4rem !important; }
+  button[class*="tracking-widest"] { padding: 6px 10px !important; font-size: 10px !important; }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .grid.grid-cols-4       { grid-template-columns: repeat(2, 1fr) !important; }
+  .p-8                    { padding: 1.25rem !important; }
+  .text-6xl               { font-size: 3rem !important; }
 }
