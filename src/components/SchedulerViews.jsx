@@ -590,7 +590,6 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
   const [updating,        setUpdating]        = React.useState(null);
   const [ownPats,         setOwnPats]         = React.useState([]);
   const [selectedPatient, setSelectedPatient] = React.useState(null);
-  const [showDone,        setShowDone]        = React.useState(true);
 
   React.useEffect(() => {
     let channel;
@@ -706,16 +705,6 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => setShowDone(v => !v)}
-              className={`px-3 py-1.5 rounded-lg font-bold text-[10px] uppercase tracking-widest transition-all border ${
-                showDone
-                  ? 'bg-green-500/10 border-green-300 text-green-600'
-                  : 'bg-gray-100 border-gray-200 text-gray-400'
-              }`}
-            >
-              {showDone ? '✓ Showing Consulted' : 'Show Consulted'}
-            </button>
             <div className="animate-pulse flex items-center gap-2">
               <div className="w-2 h-2 bg-red-500 rounded-full"/>
               <span className="text-[10px] font-bold text-gray-400 tracking-widest">LIVE</span>
@@ -1425,16 +1414,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
                     {ROLE_LABEL[s.role]}
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-2 mb-3 bg-white rounded-lg p-2 text-[10px]">
-                  <div>
-                    <p className="text-gray-500 font-bold uppercase tracking-wider mb-1">Username</p>
-                    <p className="text-[var(--text-primary,#1a3a2a)] font-mono font-bold">{s.username}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500 font-bold uppercase tracking-wider mb-1">Password</p>
-                    <p className="text-[var(--text-primary,#1a3a2a)] font-mono font-bold">••••••••</p>
-                  </div>
-                </div>
+
                 <div className="flex items-center gap-3 justify-end">
                   <button onClick={() => handleEditOpen(s)}
                     className="p-2 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl hover:bg-blue-500/20 transition-all" title="Edit account">
