@@ -358,14 +358,16 @@ export const PatientIntakeForm = ({ formData, setFormData, addPatient: addPatien
     setSubmitting(true);
     try {
       const sb = await getSupabase();
+      const { data: ticketNum } = await sb.rpc('get_next_ticket_number');
       const { data, error } = await sb.from('patients').insert({
-        fullname:     form.fullname.trim(),
-        dob:          form.dob,
-        gender:       form.gender,
-        phone:        form.phone.trim(),
-        condition:    form.condition.trim(),
-        urgency:      'medium',
-        arrival_time: new Date().toISOString(),
+        fullname:      form.fullname.trim(),
+        dob:           form.dob,
+        gender:        form.gender,
+        phone:         form.phone.trim(),
+        condition:     form.condition.trim(),
+        urgency:       'medium',
+        arrival_time:  new Date().toISOString(),
+        ticket_number: ticketNum,
       }).select().single();
       if (error) throw error;
       setTicket(data);
@@ -726,8 +728,8 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
             : sorted.map((p, i) => (
               <div key={p.id} style={{background: p.status==='done' ? 'var(--bg-input)' : 'var(--bg-nav-active)', border: `1px solid ${p.status==='done' ? 'var(--border)' : 'var(--border-input)'}`, opacity: p.status==='done' ? 0.75 : 1}} className="p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                 <div className="flex items-center gap-4 flex-1 min-w-0">
-                  <div className={`text-2xl font-black shrink-0 w-8 text-center ${p.status === 'done' ? 'text-green-400 text-lg' : 'text-green-200'}`}>
-                    {p.status === 'done' ? '✓' : (i+1).toString().padStart(2,'0')}
+                  <div className={`text-2xl font-black shrink-0 w-8 text-center ${p.status === 'done' ? 'opacity-0' : 'text-green-200'}`}>
+                    {p.status === 'done' ? '' : (i+1).toString().padStart(2,'0')}
                   </div>
                   <div className="min-w-0 cursor-pointer flex-1" onClick={() => setSelectedPatient(p)}>
                     <div className="flex items-center gap-2 flex-wrap">
@@ -798,6 +800,7 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
   const [notes,           setNotes]           = React.useState('');
   const [shiftDoc,        setShiftDoc]        = React.useState('today');
   const [selectedPatient, setSelectedPatient] = React.useState(null);
+  const [historyUrgency,  setHistoryUrgency]  = React.useState('all');
 
   const sorted  = getSortedPatients().filter(p => p.status !== 'done');
   const current = sorted[0];
@@ -915,16 +918,25 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
 
       {tab === 'history' && (
         <div className="dashboard-card p-8">
-          <div className="flex justify-between items-center mb-4 border-b border-green-100 pb-4">
+          <div className="flex flex-wrap justify-between items-center mb-4 border-b border-green-100 pb-4 gap-3">
             <h3 className="text-[var(--text-primary,#1a3a2a)] font-black text-xs uppercase tracking-widest">Consultation History</h3>
-            <select className="form-input w-36 text-xs" value={shiftDoc} onChange={e => setShiftDoc(e.target.value)}>
-              <option value="today">Today</option>
-              <option value="week">This Week</option>
-              <option value="all">All Time</option>
-            </select>
+            <div className="flex items-center gap-2">
+              <select className="form-input w-36 text-xs" value={historyUrgency} onChange={e => setHistoryUrgency(e.target.value)}>
+                <option value="all">All Levels</option>
+                <option value="critical">Critical</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+              <select className="form-input w-36 text-xs" value={shiftDoc} onChange={e => setShiftDoc(e.target.value)}>
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="all">All Time</option>
+              </select>
+            </div>
           </div>
           <div className="space-y-3">
-            {history.filter(shiftFilterDoc).map(p => (
+            {history.filter(shiftFilterDoc).filter(p => historyUrgency === 'all' || p.urgency === historyUrgency).map(p => (
               <div key={p.id} className="p-4 bg-green-50 rounded-2xl border border-green-100 cursor-pointer hover:border-green-300 transition-colors" onClick={() => setSelectedPatient(p)}>
                 <div className="flex justify-between items-start">
                   <div className="flex-1 min-w-0">
@@ -944,8 +956,10 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
                 )}
               </div>
             ))}
-            {history.length === 0 && (
-              <p className="text-center text-gray-400 text-xs font-bold uppercase py-8 tracking-widest">No history yet</p>
+            {history.filter(shiftFilterDoc).filter(p => historyUrgency === 'all' || p.urgency === historyUrgency).length === 0 && (
+              <p className="text-center text-gray-400 text-xs font-bold uppercase py-8 tracking-widest">
+                {historyUrgency !== 'all' ? `No ${historyUrgency} patients in history` : 'No history yet'}
+              </p>
             )}
           </div>
         </div>
