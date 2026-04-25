@@ -2,15 +2,12 @@ import React from 'react';
 import { User, ClipboardList, Stethoscope, BarChart3, ShieldCheck, Activity, ArrowLeft,
          UserPlus, Users, Trash2, AlertCircle, Loader2, Search, Edit2,
          Clock, CheckCircle, Download, TrendingUp } from 'lucide-react';
+import { supabase as _supabase } from '../lib/supabase';
+import bcrypt from 'bcryptjs';
 
 // ─── SUPABASE ─────────────────────────────────────────────────────────────────
-const getSupabase = async () => {
-  const { createClient } = await import('@supabase/supabase-js');
-  return createClient(
-    'https://xstfijkxvloflbdsyslf.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzdGZpamt4dmxvZmxiZHN5c2xmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3ODIzNTYsImV4cCI6MjA4NzM1ODM1Nn0.U2QnstkXz7roRqb2-hzj48_-WSgld7HjmcHcg9w0YsA'
-  );
-};
+// Use singleton to avoid GoTrueClient multiple-instance warnings
+const getSupabase = async () => _supabase;
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 const timeAgo = (ts) => {
@@ -39,57 +36,54 @@ const UrgencyBadge = ({ urgency }) => {
 const PatientDetailModal = ({ patient, onClose }) => {
   if (!patient) return null;
   const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' }) : '—';
-  const rows = [
-    { label:'Queue #',      val: patient.ticket_number ? `#${patient.ticket_number}` : '—' },
-    { label:'Full Name',    val: patient.fullname },
-    { label:'Date of Birth',val: formatDate(patient.dob) },
-    { label:'Gender',       val: patient.gender || '—' },
-    { label:'Phone',        val: patient.phone || '—' },
-    { label:'Condition',    val: patient.condition },
-    { label:'Urgency',      val: null, badge: patient.urgency },
-    { label:'Arrived',      val: new Date(patient.arrival_time).toLocaleString('en-PH') },
-    { label:'Status',       val: patient.status === 'done' ? 'Consulted ✓' : 'Waiting' },
+
+  const topFields = [
+    { label:'Queue #',       val: patient.ticket_number ? `#${patient.ticket_number}` : '—' },
+    { label:'Gender',        val: patient.gender || '—' },
+    { label:'Date of Birth', val: formatDate(patient.dob) },
+    { label:'Phone',         val: patient.phone || '—' },
+    { label:'Arrived',       val: new Date(patient.arrival_time).toLocaleString('en-PH') },
+    { label:'Status',        val: patient.status === 'done' ? 'Consulted ✓' : 'Waiting' },
   ];
-  if (patient.doctor_notes) rows.push({ label:'Doctor Notes', val: patient.doctor_notes });
 
   return (
-    <div
-      onClick={onClose}
-      style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center', padding:'1rem' }}
-    >
-      <div
-        onClick={e => e.stopPropagation()}
-        style={{ background:'#ffffff', borderRadius:'1.5rem', border:'1px solid rgba(34,197,94,0.2)', padding:'2rem', maxWidth:'420px', width:'100%', boxShadow:'0 20px 60px rgba(0,80,30,0.15)', maxHeight:'90vh', overflowY:'auto' }}
-      >
+    <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.55)', zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center', padding:'1rem', overflowY:'auto' }}>
+      <div onClick={e => e.stopPropagation()} style={{ background:'#ffffff', borderRadius:'1.5rem', border:'1px solid rgba(34,197,94,0.2)', padding:'1.75rem', maxWidth:'460px', width:'100%', boxShadow:'0 20px 60px rgba(0,80,30,0.15)', maxHeight:'92vh', overflowY:'auto' }}>
+
         {/* Header */}
-        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'1.5rem' }}>
-          <div>
-            <p style={{ color:'#9ca3af', fontSize:'10px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.2em', margin:'0 0 4px' }}>Patient Details</p>
-            <h3 style={{ color:'#1a3a2a', fontWeight:900, fontSize:'1.3rem', margin:0 }}>{patient.fullname}</h3>
-          </div>
-          <button
-            onClick={onClose}
-            style={{ background:'rgba(239,68,68,0.1)', border:'1px solid rgba(239,68,68,0.2)', color:'#ef4444', borderRadius:'0.5rem', padding:'6px 10px', cursor:'pointer', fontWeight:700, fontSize:'11px' }}
-          >✕</button>
+        <div style={{ display:'flex', justifyContent:'flex-end', alignItems:'flex-start', marginBottom:'1.25rem' }}>
+          <button onClick={onClose} style={{ background:'rgba(239,68,68,0.1)', border:'1px solid rgba(239,68,68,0.2)', color:'#ef4444', borderRadius:'0.5rem', padding:'6px 10px', cursor:'pointer', fontWeight:700, fontSize:'11px' }}>✕</button>
         </div>
 
-        {/* Rows */}
-        <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem' }}>
-          {rows.map(row => (
-            <div key={row.label} style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', padding:'0.6rem 0.75rem', background:'#f0faf4', borderRadius:'0.75rem', gap:'1rem' }}>
-              <span style={{ color:'#9ca3af', fontSize:'10px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.1em', flexShrink:0 }}>{row.label}</span>
-              {row.badge
-                ? <UrgencyBadge urgency={row.badge}/>
-                : <span style={{ color:'#1a3a2a', fontSize:'12px', fontWeight:600, textAlign:'right', wordBreak:'break-word' }}>{row.val}</span>
-              }
+        {/* Urgency + Name hero row */}
+        <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', background:'#f0faf4', borderRadius:'0.75rem', padding:'0.85rem 1rem', marginBottom:'1rem' }}>
+          <UrgencyBadge urgency={patient.urgency}/>
+          <span style={{ color:'#1a3a2a', fontWeight:700, fontSize:'13px' }}>{patient.fullname}</span>
+        </div>
+
+        {/* Grid of detail boxes */}
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0.5rem', marginBottom:'0.75rem' }}>
+          {topFields.map(row => (
+            <div key={row.label} style={{ background:'#f8fffe', border:'1px solid rgba(34,197,94,0.15)', borderRadius:'0.75rem', padding:'0.65rem 0.85rem' }}>
+              <p style={{ color:'#9ca3af', fontSize:'9px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.12em', margin:'0 0 3px' }}>{row.label}</p>
+              <p style={{ color:'#1a3a2a', fontSize:'12px', fontWeight:700, margin:0, wordBreak:'break-word' }}>{row.val}</p>
             </div>
           ))}
         </div>
 
-        <button
-          onClick={onClose}
-          style={{ width:'100%', marginTop:'1.5rem', background:'#16a34a', color:'white', border:'none', padding:'0.85rem', borderRadius:'0.75rem', fontWeight:700, fontSize:'12px', textTransform:'uppercase', letterSpacing:'0.1em', cursor:'pointer' }}
-        >Close</button>
+        {/* Condition — full width box */}
+        <div style={{ background:'#f8fffe', border:'1px solid rgba(34,197,94,0.15)', borderRadius:'0.75rem', padding:'0.75rem 0.85rem', marginBottom:'0.5rem' }}>
+          <p style={{ color:'#9ca3af', fontSize:'9px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.12em', margin:'0 0 4px' }}>Condition</p>
+          <p style={{ color:'#1a3a2a', fontSize:'12px', fontWeight:600, margin:0, lineHeight:1.6 }}>{patient.condition}</p>
+        </div>
+
+        {/* Doctor Notes — full width box if present */}
+        {patient.doctor_notes && (
+          <div style={{ background:'#fffbf0', border:'1px solid rgba(245,158,11,0.2)', borderRadius:'0.75rem', padding:'0.75rem 0.85rem', marginBottom:'0.5rem' }}>
+            <p style={{ color:'#d97706', fontSize:'9px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.12em', margin:'0 0 4px' }}>Doctor Notes</p>
+            <p style={{ color:'#1a3a2a', fontSize:'12px', fontWeight:600, margin:0, lineHeight:1.6 }}>{patient.doctor_notes}</p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -100,7 +94,7 @@ export const RoleSelectionScreen = ({ onSelect }) => {
   const [activeNav,  setActiveNav]  = React.useState(null); // 'login' | 'about' | 'contact'
 
   return (
-    <div style={{ minHeight:'100vh', display:'flex', flexDirection:'column', background:'#f0faf4', fontFamily:'Poppins, sans-serif' }}>
+    <div style={{ minHeight:'100vh', display:'flex', flexDirection:'column', background:'#f0faf4', fontFamily:'Poppins, sans-serif', overflow:'hidden' }}>
 
       {/* ══════════════════════════════════════
           NAVBAR — matches reference style
@@ -247,12 +241,12 @@ export const RoleSelectionScreen = ({ onSelect }) => {
       {/* ══════════════════════════════════════
           HERO — Patient Registration
       ══════════════════════════════════════ */}
-      <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'4rem 2rem' }}>
-        <div style={{ textAlign:'center', marginBottom:'3rem', maxWidth:'520px' }}>
-          <h1 style={{ fontWeight:900, fontSize:'clamp(2rem,5vw,3.2rem)', fontStyle:'italic', letterSpacing:'-2px', color:'#1a3a2a', margin:'0 0 1rem', lineHeight:1 }}>
+      <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'clamp(2rem,5vw,4rem) 1.25rem' }}>
+        <div style={{ textAlign:'center', marginBottom:'3rem', maxWidth:'520px', width:'100%' }}>
+          <h1 style={{ fontWeight:900, fontSize:'clamp(2.2rem,8vw,3.2rem)', fontStyle:'italic', letterSpacing:'-2px', color:'#1a3a2a', margin:'0 0 1rem', lineHeight:1 }}>
             HEALTH<span style={{ color:'#16a34a' }}>FLOW</span>
           </h1>
-          <p style={{ color:'#4b7a5a', fontSize:'1rem', fontWeight:500, margin:'0 0 0.5rem', lineHeight:1.6 }}>
+          <p style={{ color:'#4b7a5a', fontSize:'clamp(0.875rem,3vw,1rem)', fontWeight:500, margin:'0 0 0.5rem', lineHeight:1.6 }}>
             Priority-Based Patient Scheduling System
           </p>
           <p style={{ color:'#9ca3af', fontSize:'13px', margin:0 }}>
@@ -260,14 +254,14 @@ export const RoleSelectionScreen = ({ onSelect }) => {
           </p>
         </div>
 
-        <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:'1.5rem', width:'100%', maxWidth:'380px' }}>
+        <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:'1.5rem', width:'100%', maxWidth:'380px', padding:'0 1rem' }}>
           <button
             onClick={() => onSelect('patient')}
-            style={{ width:'100%', background:'#16a34a', color:'white', border:'none', padding:'1.25rem 2rem', borderRadius:'1rem', fontWeight:800, fontSize:'1rem', textTransform:'uppercase', letterSpacing:'0.15em', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:12, boxShadow:'0 4px 20px rgba(22,163,74,0.3)', transition:'all 0.2s' }}
+            style={{ width:'100%', background:'#16a34a', color:'white', border:'none', padding:'1.1rem 1.5rem', borderRadius:'1rem', fontWeight:800, fontSize:'clamp(0.85rem,3vw,1rem)', textTransform:'uppercase', letterSpacing:'0.12em', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:10, boxShadow:'0 4px 20px rgba(22,163,74,0.3)', transition:'all 0.2s', whiteSpace:'nowrap' }}
             onMouseOver={e => e.currentTarget.style.background='#15803d'}
             onMouseOut={e => e.currentTarget.style.background='#16a34a'}
           >
-            <User size={22}/>
+            <User size={20}/>
             Register as Patient
           </button>
           <p style={{ color:'#9ca3af', fontSize:'11px', textAlign:'center', lineHeight:1.6, margin:0 }}>
@@ -332,12 +326,13 @@ const QueueTicketInline = ({ patient, onBack }) => (
 );
 
 // ─── PATIENT INTAKE FORM ──────────────────────────────────────────────────────
-export const PatientIntakeForm = ({ formData, setFormData, addPatient: addPatientProp }) => {
+export const PatientIntakeForm = ({ formData, setFormData, addPatient: addPatientProp, formError: externalError }) => {
   const [localForm, setLocalForm] = React.useState(formData || { fullname:'', dob:'', gender:'', phone:'', condition:'' });
   const [submitting, setSubmitting] = React.useState(false);
   const [submitted,  setSubmitted]  = React.useState(false);
   const [ticket,     setTicket]     = React.useState(null);
   const [errors,     setErrors]     = React.useState({});
+  const [submitError, setSubmitError] = React.useState('');
 
   const form    = formData || localForm;
   const setForm = setFormData || setLocalForm;
@@ -346,6 +341,8 @@ export const PatientIntakeForm = ({ formData, setFormData, addPatient: addPatien
     const newErrors = {};
     if (!form.fullname.trim())          newErrors.fullname  = 'Full name is required.';
     if (!form.dob)                      newErrors.dob       = 'Date of birth is required.';
+    else if (form.dob === 'Invalid date' || new Date(form.dob).toString() === 'Invalid Date') newErrors.dob = 'Invalid date.';
+    else if (new Date(form.dob) > new Date()) newErrors.dob = 'Invalid Date.';
     if (!form.gender)                   newErrors.gender    = 'Gender is required.';
     if (!form.phone.trim())             newErrors.phone     = 'Phone number is required.';
     else if (!/^09\d{9}$/.test(form.phone.trim())) newErrors.phone = 'Phone number must start with 09 and be 11 digits.';
@@ -357,6 +354,7 @@ export const PatientIntakeForm = ({ formData, setFormData, addPatient: addPatien
     const newErrors = validate();
     if (Object.keys(newErrors).length > 0) { setErrors(newErrors); return; }
     setErrors({});
+    setSubmitError('');
     setSubmitting(true);
     try {
       const sb = await getSupabase();
@@ -376,7 +374,7 @@ export const PatientIntakeForm = ({ formData, setFormData, addPatient: addPatien
       // Calling it would cause a duplicate patient record.
     } catch(e) {
       console.error(e);
-      alert('Failed to register. Please try again.');
+      setSubmitError('Registration failed. Please check your connection and try again.');
     } finally { setSubmitting(false); }
   };
 
@@ -420,6 +418,7 @@ export const PatientIntakeForm = ({ formData, setFormData, addPatient: addPatien
           <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block ml-2">Date of Birth <span className="text-red-500">*</span></label>
           <input
             type="date"
+            max={new Date().toISOString().split('T')[0]}
             className={`form-input ${errors.dob ? 'border-red-400' : ''}`}
             value={form.dob}
             onChange={e => { setForm({...form, dob: e.target.value}); if(errors.dob) setErrors({...errors, dob:''}); }}
@@ -468,6 +467,11 @@ export const PatientIntakeForm = ({ formData, setFormData, addPatient: addPatien
           />
           <FieldError field="condition"/>
         </div>
+        {(submitError || externalError) && (
+          <div className="flex items-start gap-3 bg-red-50 border border-red-200 text-red-600 rounded-xl p-4 text-sm font-semibold">
+            <span>⚠ {submitError || externalError}</span>
+          </div>
+        )}
         <button onClick={handleSubmit} disabled={submitting}
           className="w-full bg-green-600 hover:bg-green-500 disabled:opacity-60 p-4 rounded-xl font-bold transition-all shadow-lg flex items-center justify-center gap-2 text-white">
           {submitting ? <><Loader2 size={16} className="animate-spin"/> Submitting...</> : 'SUBMIT & JOIN QUEUE'}
@@ -637,7 +641,7 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
   patients.filter(p => p.status !== 'done').filter(shiftFilter).forEach(p => { if (counts[p.urgency] !== undefined) counts[p.urgency]++; });
 
   const sorted = getSortedPatients()
-    .filter(p => statusFilter === 'waiting' ? p.status !== 'done' : statusFilter === 'done' ? p.status === 'done' : true)
+    .filter(p => statusFilter === 'waiting' ? p.status !== 'done' : statusFilter === 'done' ? p.status === 'done' : statusFilter === 'waiting_done' ? p.status === 'done' || p.status !== 'done' : true)
     .filter(shiftFilter)
     .filter(p => (filter==='all' || p.urgency===filter) &&
       (p.fullname.toLowerCase().includes(search.toLowerCase()) || p.condition.toLowerCase().includes(search.toLowerCase())));
@@ -646,7 +650,7 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
   const waitingCount = getSortedPatients().filter(shiftFilter).filter(p => p.status !== 'done').length;
 
   return (
-    <div className="p-8 text-[var(--text-primary,#1a3a2a)]">
+    <div className="p-4 sm:p-8 text-[var(--text-primary,#1a3a2a)]">
       <PatientDetailModal patient={selectedPatient} onClose={() => setSelectedPatient(null)}/>
       <div className="mb-6">
         <h2 style={{color:"#0f172a",fontWeight:900,fontSize:"1.65rem",margin:0,lineHeight:1.1}}>Triage Dashboard</h2>
@@ -654,7 +658,7 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
         {[
           { label:'Critical', key:'critical', accent:'border-t-red-500',   text:'text-red-400'   },
           { label:'High',     key:'high',     accent:'border-t-amber-500', text:'text-amber-400' },
@@ -669,28 +673,31 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
       </div>
 
       {/* Search & filters */}
-      <div className="flex gap-3 mb-6 flex-wrap">
-        <div className="relative flex-1 min-w-44">
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        <div className="relative flex-1">
           <Search size={13} style={{position:"absolute",left:"12px",top:"50%",transform:"translateY(-50%)",opacity:0.45,color:"var(--text-muted)",pointerEvents:"none"}}/>
           <input className="form-input" style={{paddingLeft:"36px"}} placeholder="Search patients..." value={search} onChange={e => setSearch(e.target.value)}/>
         </div>
-        <select className="form-input w-36" value={filter} onChange={e => setFilter(e.target.value)}>
-          <option value="all">All Levels</option>
-          <option value="critical">Critical</option>
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
-        </select>
-        <select className="form-input w-36" value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
-          <option value="all">All Patients</option>
-          <option value="waiting">Waiting Only</option>
-          <option value="done">Finished Only</option>
-        </select>
-        <select className="form-input w-36" value={shift} onChange={e => setShift(e.target.value)}>
-          <option value="today">Today</option>
-          <option value="week">This Week</option>
-          <option value="all">All Time</option>
-        </select>
+        <div className="grid grid-cols-3 sm:flex gap-3">
+          <select className="form-input" value={filter} onChange={e => setFilter(e.target.value)}>
+            <option value="all">All Levels</option>
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+          <select className="form-input" value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+            <option value="all">All Patients</option>
+            <option value="waiting">Waiting Only</option>
+            <option value="done">Finished Only</option>
+          </select>
+
+          <select className="form-input" value={shift} onChange={e => setShift(e.target.value)}>
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="all">All Time</option>
+          </select>
+        </div>
       </div>
 
       {/* Queue */}
@@ -717,12 +724,14 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
                 {search || filter !== 'all' ? 'No patients match your filter' : 'No Active Patients'}
               </div>
             : sorted.map((p, i) => (
-              <div key={p.id} style={{background: p.status==='done' ? 'var(--bg-input)' : 'var(--bg-nav-active)', border: `1px solid ${p.status==='done' ? 'var(--border)' : 'var(--border-input)'}`, opacity: p.status==='done' ? 0.75 : 1}} className="p-5 rounded-2xl flex justify-between items-center gap-4">
-                <div className="flex items-center gap-5 flex-1 min-w-0">
-                  <div className={`text-2xl font-black shrink-0 ${p.status === 'done' ? 'text-gray-200' : 'text-green-200'}`}>{(i+1).toString().padStart(2,'0')}</div>
-                  <div className="min-w-0 cursor-pointer" onClick={() => setSelectedPatient(p)}>
-                    <div className="flex items-center gap-2">
-                      <p className="font-bold text-[var(--text-primary,#1a3a2a)] text-lg truncate hover:text-green-600 transition-colors">{p.fullname}</p>
+              <div key={p.id} style={{background: p.status==='done' ? 'var(--bg-input)' : 'var(--bg-nav-active)', border: `1px solid ${p.status==='done' ? 'var(--border)' : 'var(--border-input)'}`, opacity: p.status==='done' ? 0.75 : 1}} className="p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                <div className="flex items-center gap-4 flex-1 min-w-0">
+                  <div className={`text-2xl font-black shrink-0 w-8 text-center ${p.status === 'done' ? 'text-green-400 text-lg' : 'text-green-200'}`}>
+                    {p.status === 'done' ? '✓' : (i+1).toString().padStart(2,'0')}
+                  </div>
+                  <div className="min-w-0 cursor-pointer flex-1" onClick={() => setSelectedPatient(p)}>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-bold text-[var(--text-primary,#1a3a2a)] text-base sm:text-lg truncate hover:text-green-600 transition-colors">{p.fullname}</p>
                       {p.status === 'done' && <span className="px-2 py-0.5 bg-green-500/20 text-green-600 rounded text-[9px] font-black uppercase shrink-0">Consulted</span>}
                     </div>
                     <p className="text-sm text-gray-400 italic truncate hover:text-green-500 transition-colors">"{p.condition}"</p>
@@ -732,13 +741,13 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
                     </p>
                   </div>
                 </div>
-                <div className="shrink-0">
+                <div className="shrink-0 self-end sm:self-auto">
                   {p.status === 'done'
                     ? <span className="text-green-500 text-[11px] font-black uppercase">✓ Done</span>
                     : updating === p.id
                       ? <Loader2 size={16} className="text-green-400 animate-spin"/>
                       : <select value={p.urgency} onChange={e => updateUrgency(p.id, e.target.value)}
-                          className="bg-white border border-green-200 text-[var(--text-primary,#1a3a2a)] px-3 py-2 rounded-lg font-bold text-[11px] uppercase cursor-pointer">
+                          className="bg-white border border-green-200 text-[var(--text-primary,#1a3a2a)] px-3 py-2 rounded-lg font-bold text-[11px] uppercase cursor-pointer w-full sm:w-auto">
                           <option value="low">Low</option>
                           <option value="medium">Medium</option>
                           <option value="high">High</option>
@@ -823,7 +832,7 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
   };
 
   return (
-    <div className="p-8 text-[var(--text-primary,#1a3a2a)]">
+    <div className="p-4 sm:p-8 text-[var(--text-primary,#1a3a2a)]">
       <PatientDetailModal patient={selectedPatient} onClose={() => setSelectedPatient(null)}/>
       <div className="mb-6">
         <h2 style={{color:"#0f172a",fontWeight:900,fontSize:"1.65rem",margin:0,lineHeight:1.1}}>Doctor Dashboard</h2>
@@ -871,7 +880,15 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
                     : <><CheckCircle size={16}/> Mark as Done</>}
                 </button>
               </>
-            ) : <p className="text-gray-600 py-10 font-bold uppercase tracking-widest">All Patients Cleared</p>}
+            ) : (
+              <div className="flex flex-col items-center justify-center py-10 gap-3">
+                <div className="w-16 h-16 rounded-full bg-green-50 border border-green-100 flex items-center justify-center">
+                  <CheckCircle size={32} className="text-green-400"/>
+                </div>
+                <p className="text-green-600 font-black text-sm uppercase tracking-widest">All Clear!</p>
+                <p className="text-gray-400 text-xs text-center">No patients in queue.<br/>New patients will appear here automatically.</p>
+              </div>
+            )}
           </div>
 
           {/* Queue list */}
@@ -973,6 +990,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
   const [editLoading,     setEditLoading]     = React.useState(false);
   const [editError,       setEditError]       = React.useState('');
   const [editSuccess,     setEditSuccess]     = React.useState('');
+  const [mgrStatusFilter, setMgrStatusFilter] = React.useState('all'); // 'all' | 'waiting' | 'done'
 
   const handleEditOpen = (s) => {
     setEditStaff(s);
@@ -1082,7 +1100,6 @@ export const ManagerView = ({ patients: patientsProp }) => {
       if (ex?.length > 0) { setEditError('Username already taken.'); setEditLoading(false); return; }
       const updateData = { full_name: editForm.fullName.trim(), username: editForm.username.trim() };
       if (editForm.password && editForm.password.length >= 6) {
-        const bcrypt = await import('bcryptjs');
         updateData.password = await bcrypt.hash(editForm.password, 12);
       }
       const { error: ue } = await sb.from('users').update(updateData).eq('id', editStaff.id);
@@ -1123,13 +1140,15 @@ export const ManagerView = ({ patients: patientsProp }) => {
   const ROLE_LABEL = { triage:'Nurse', doctor:'Doctor', manager:'Manager' };
 
   const filtStaff    = staffList.filter(s=>s.full_name.toLowerCase().includes(search.toLowerCase())||s.username.toLowerCase().includes(search.toLowerCase()));
-  const filtPatients = patients.filter(p=>p.fullname.toLowerCase().includes(search.toLowerCase())||p.condition.toLowerCase().includes(search.toLowerCase()));
+  const filtPatients = patients
+    .filter(p => mgrStatusFilter === 'waiting' ? p.status !== 'done' : mgrStatusFilter === 'done' ? p.status === 'done' : true)
+    .filter(p=>p.fullname.toLowerCase().includes(search.toLowerCase())||p.condition.toLowerCase().includes(search.toLowerCase()));
 
   const TABS = ['overview','analytics','patients','create','staff'];
   const TAB_LABELS = { overview:'Overview', analytics:'Analytics', patients:'Patient Records', create:'+ Create Account', staff:'Staff List' };
 
   return (
-    <div className="p-8 text-[var(--text-primary,#1a3a2a)]">
+    <div className="p-4 sm:p-8 text-[var(--text-primary,#1a3a2a)]">
       <PatientDetailModal patient={selectedPatient} onClose={() => setSelectedPatient(null)}/>
       <div className="mb-6">
         <h2 style={{color:"#0f172a",fontWeight:900,fontSize:"1.65rem",margin:0,lineHeight:1.1}}>Manager Dashboard</h2>
@@ -1163,27 +1182,27 @@ export const ManagerView = ({ patients: patientsProp }) => {
             ))}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="dashboard-card p-8 flex flex-col items-center justify-center text-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="dashboard-card p-6 sm:p-8 flex flex-col items-center justify-center text-center">
               <p className="text-gray-400 font-bold text-xs uppercase tracking-[0.3em] mb-2">Total Patients</p>
               <div className="text-6xl font-black text-green-600">{filteredByShift.length}</div>
-              <div className="flex gap-2 mt-3">
+              <div className="flex gap-2 mt-3 flex-wrap justify-center">
                 <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-lg text-[10px] font-black uppercase">{filteredByShift.filter(p=>p.status==='done').length} Done</span>
                 <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-lg text-[10px] font-black uppercase">{filteredByShift.filter(p=>p.status!=='done').length} Waiting</span>
               </div>
             </div>
-            <div className="dashboard-card p-8 flex flex-col items-center justify-center text-center">
+            <div className="dashboard-card p-6 sm:p-8 flex flex-col items-center justify-center text-center">
               <p className="text-gray-400 font-bold text-xs uppercase tracking-[0.3em] mb-2">Total Staff</p>
               <div className="text-6xl font-black text-emerald-600">{staffList.length}</div>
-              <div className="flex gap-2 mt-3">
+              <div className="flex gap-2 mt-3 flex-wrap justify-center">
                 <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-lg text-[10px] font-black uppercase">{staffList.filter(s=>s.role==='triage').length} Nurses</span>
                 <span className="px-3 py-1 bg-emerald-100 text-emerald-600 rounded-lg text-[10px] font-black uppercase">{staffList.filter(s=>s.role==='doctor').length} Doctors</span>
               </div>
             </div>
           </div>
 
-          <div className="dashboard-card p-8">
-            <div className="flex justify-between items-center mb-4 border-b border-green-100 pb-4">
+          <div className="dashboard-card p-6 sm:p-8">
+            <div className="flex flex-wrap justify-between items-center mb-4 border-b border-green-100 pb-4 gap-3">
               <h3 className="text-[var(--text-primary,#1a3a2a)] font-black text-xs uppercase tracking-widest">Recent Activity</h3>
               <button onClick={exportCSV}
                 className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-600 border border-green-200 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-green-100 transition-all">
@@ -1191,8 +1210,8 @@ export const ManagerView = ({ patients: patientsProp }) => {
               </button>
             </div>
             {filteredByShift.slice(-5).reverse().map(p => (
-              <div key={p.id} className="border-l-2 border-green-500 pl-4 mb-3 flex justify-between items-center cursor-pointer hover:bg-green-50 rounded-r-lg pr-2 transition-colors" onClick={() => setSelectedPatient(p)}>
-                <div>
+              <div key={p.id} className="border-l-2 border-green-500 pl-4 mb-3 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 cursor-pointer hover:bg-green-50 rounded-r-lg pr-2 transition-colors" onClick={() => setSelectedPatient(p)}>
+                <div className="min-w-0">
                   <span className="text-[var(--text-primary,#1a3a2a)] font-bold text-sm">{p.fullname}</span>
                   <span className="text-gray-400 text-xs"> — {p.condition}</span>
                 </div>
@@ -1210,7 +1229,20 @@ export const ManagerView = ({ patients: patientsProp }) => {
       {/* ANALYTICS */}
       {tab === 'analytics' && (
         <div className="flex flex-col gap-6">
-          <div className="grid grid-cols-4 gap-4">
+          {/* Time filter */}
+          <div className="flex items-center gap-3 flex-wrap">
+            <span className="text-gray-400 text-[11px] font-bold uppercase tracking-widest">Showing:</span>
+            {['today','week','all'].map(s => (
+              <button key={s} onClick={() => setShiftMgr(s)}
+                className={`px-4 py-2 rounded-xl font-bold text-[11px] uppercase tracking-widest transition-all ${
+                  shiftMgr === s ? 'bg-green-600 text-white' : 'bg-green-50 text-gray-400 hover:text-green-700'
+                }`}>
+                {s==='today'?'Today':s==='week'?'This Week':'All Time'}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
               { label:'Critical', key:'critical', accent:'border-t-red-500',   text:'text-red-400'   },
               { label:'High',     key:'high',     accent:'border-t-amber-500', text:'text-amber-400' },
@@ -1225,7 +1257,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
             ))}
           </div>
 
-          <div className="dashboard-card p-8">
+          <div className="dashboard-card p-6 sm:p-8">
             <h3 className="text-[var(--text-primary,#1a3a2a)] font-black text-xs uppercase tracking-widest mb-6 flex items-center gap-2">
               <TrendingUp size={15} className="text-amber-400"/> Urgency Distribution
             </h3>
@@ -1237,8 +1269,8 @@ export const ManagerView = ({ patients: patientsProp }) => {
             ].map(s => {
               const pct = Math.round(uc[s.key]/total*100);
               return (
-                <div key={s.key} className="flex items-center gap-4 mb-4">
-                  <div className="w-16 text-right text-[11px] font-bold uppercase text-gray-500">{s.label}</div>
+                <div key={s.key} className="flex items-center gap-3 mb-4">
+                  <div className="w-14 text-right text-[11px] font-bold uppercase text-gray-500">{s.label}</div>
                   <div className="flex-1 bg-green-100 rounded-full h-6 overflow-hidden">
                     <div className={`${s.bar} h-full rounded-full flex items-center justify-end pr-2 transition-all`}
                       style={{ width:`${Math.max(pct,2)}%` }}>
@@ -1251,14 +1283,14 @@ export const ManagerView = ({ patients: patientsProp }) => {
             })}
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-3">
             {[
-              { label:'Total Patients', val:patients.length,                              text:'text-green-600' },
-              { label:'Consulted',      val:patients.filter(p=>p.status==='done').length, text:'text-green-400' },
-              { label:'Waiting',        val:patients.filter(p=>p.status!=='done').length, text:'text-blue-400'  },
+              { label:'Total Patients', val:filteredByShift.length,                              text:'text-green-600' },
+              { label:'Consulted',      val:filteredByShift.filter(p=>p.status==='done').length, text:'text-green-400' },
+              { label:'Waiting',        val:filteredByShift.filter(p=>p.status!=='done').length, text:'text-blue-400'  },
             ].map(s => (
-              <div key={s.label} className="dashboard-card p-8 text-center">
-                <div className={`text-4xl font-black ${s.text}`}>{s.val}</div>
+              <div key={s.label} className="dashboard-card p-4 sm:p-8 text-center">
+                <div className={`text-3xl sm:text-4xl font-black ${s.text}`}>{s.val}</div>
                 <div className="text-[10px] font-bold uppercase text-gray-500 mt-1">{s.label}</div>
               </div>
             ))}
@@ -1268,13 +1300,20 @@ export const ManagerView = ({ patients: patientsProp }) => {
 
       {/* PATIENT RECORDS */}
       {tab === 'patients' && (
-        <div className="dashboard-card p-8">
-          <div className="flex justify-between items-center mb-4 border-b border-green-100 pb-4">
+        <div className="dashboard-card p-6 sm:p-8">
+          <div className="flex flex-wrap justify-between items-center mb-4 border-b border-green-100 pb-4 gap-3">
             <h3 className="text-[var(--text-primary,#1a3a2a)] font-black text-xs uppercase tracking-widest">All Patient Records</h3>
-            <button onClick={exportCSV}
-              className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-600 border border-green-200 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-green-100 transition-all">
-              <Download size={13}/> Export CSV
-            </button>
+            <div className="flex items-center gap-2">
+              <select className="form-input text-xs" value={mgrStatusFilter} onChange={e => setMgrStatusFilter(e.target.value)}>
+                <option value="all">All Patients</option>
+                <option value="waiting">Waiting Only</option>
+                <option value="done">Finished Only</option>
+              </select>
+              <button onClick={exportCSV}
+                className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-600 border border-green-200 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-green-100 transition-all">
+                <Download size={13}/> Export CSV
+              </button>
+            </div>
           </div>
           <div className="relative mb-4">
             <Search size={13} style={{position:"absolute",left:"12px",top:"50%",transform:"translateY(-50%)",opacity:0.45,color:"var(--text-muted)",pointerEvents:"none"}}/>
@@ -1282,7 +1321,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
           </div>
           <div className="space-y-3 max-h-[500px] overflow-y-auto">
             {filtPatients.map(p => (
-              <div key={p.id} className="p-5 bg-green-50 rounded-2xl border border-green-100 flex justify-between items-center gap-4 cursor-pointer hover:border-green-300 transition-colors" onClick={() => setSelectedPatient(p)}>
+              <div key={p.id} className="p-4 sm:p-5 bg-green-50 rounded-2xl border border-green-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 cursor-pointer hover:border-green-300 transition-colors" onClick={() => setSelectedPatient(p)}>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <p className="text-[var(--text-primary,#1a3a2a)] font-bold truncate">{p.fullname}</p>
@@ -1400,30 +1439,24 @@ export const ManagerView = ({ patients: patientsProp }) => {
           <div className="space-y-3">
             {filtStaff.map(s => (
               <div key={s.id} className="p-5 bg-green-50 rounded-2xl border border-green-100">
-                <div className="flex justify-between items-start mb-3">
-                  <div className="flex items-center gap-4 flex-1">
-                    <div className={`p-2 bg-green-50 rounded-xl ${ROLE_COLOR[s.role]||'text-green-600'}`}>
-                      {s.role==='triage' ? <Activity size={16}/> : s.role==='doctor' ? <Stethoscope size={16}/> : <BarChart3 size={16}/>}
-                    </div>
-                    <div>
-                      <p className="text-[var(--text-primary,#1a3a2a)] font-bold">{s.full_name}</p>
-                      <p className="text-gray-500 text-xs font-mono">{s.username}</p>
-                    </div>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="text-[var(--text-primary,#1a3a2a)] font-bold">{s.full_name}</p>
+                    <p className="text-gray-500 text-xs font-mono">{s.username}</p>
+                    <span className={`mt-1 inline-block px-2 py-0.5 bg-white border border-green-100 rounded text-[9px] font-black uppercase tracking-widest ${ROLE_COLOR[s.role]||'text-green-600'}`}>
+                      {ROLE_LABEL[s.role]}
+                    </span>
                   </div>
-                  <span className={`px-3 py-1 bg-green-50 rounded-lg text-[10px] font-black uppercase tracking-widest ${ROLE_COLOR[s.role]||'text-green-600'}`}>
-                    {ROLE_LABEL[s.role]}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-3 justify-end">
-                  <button onClick={() => handleEditOpen(s)}
-                    className="p-2 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl hover:bg-blue-500/20 transition-all" title="Edit account">
-                    <Edit2 size={14}/>
-                  </button>
-                  <button onClick={() => handleDelete(s.id, s.username)}
-                    className="p-2 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl hover:bg-red-500/20 transition-all" title="Delete account">
-                    <Trash2 size={14}/>
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => handleEditOpen(s)}
+                      className="p-2 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl hover:bg-blue-500/20 transition-all" title="Edit account">
+                      <Edit2 size={14}/>
+                    </button>
+                    <button onClick={() => handleDelete(s.id, s.username)}
+                      className="p-2 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl hover:bg-red-500/20 transition-all" title="Delete account">
+                      <Trash2 size={14}/>
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

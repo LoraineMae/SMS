@@ -1,6 +1,6 @@
 // App.jsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { LogOut, ArrowLeft, Activity, ClipboardList, Stethoscope, BarChart3, User, Clock, Menu, X } from 'lucide-react';
+import { LogOut, ArrowLeft, Activity, ClipboardList, Stethoscope, BarChart3, Clock, Menu, X } from 'lucide-react';
 import { supabase } from './lib/supabase';
 import { PriorityQueue } from './utils/PriorityQueue';
 import { RoleSelectionScreen, PatientIntakeForm, TriageNurseView, DoctorView, ManagerView } from './components/SchedulerViews';
@@ -11,12 +11,17 @@ import { useAuth } from './hooks/useAuth';
 import './App.css';
 
 function App() {
-  const [viewMode,      setViewMode]      = useState('landing');
-  const [selectedRole,  setSelectedRole]  = useState(null);
+  const [viewMode,      setViewMode]      = useState(() => {
+    try { const u = JSON.parse(sessionStorage.getItem('hf_user')); return u ? 'dashboard' : 'landing'; } catch { return 'landing'; }
+  });
+  const [selectedRole,  setSelectedRole]  = useState(() => {
+    try { const u = JSON.parse(sessionStorage.getItem('hf_user')); return u?.role || null; } catch { return null; }
+  });
   const [patients,      setPatients]      = useState([]);
   const [registeredPat, setRegisteredPat] = useState(null);
   const [formData,      setFormData]      = useState({ fullname:'', dob:'', gender:'', phone:'', condition:'', urgency:'medium' });
   const [sidebarOpen,   setSidebarOpen]   = useState(false);
+  const [formError,     setFormError]     = useState('');
 
   const { currentUser, isLoggedIn, authError, authLoading, login, logout,
           showTimeout, timeoutSeconds, stayLoggedIn } = useAuth();
@@ -43,7 +48,8 @@ function App() {
 
   // ── ADD PATIENT ───────────────────────────────────────────────────────────
   const addPatient = async () => {
-    if (!formData.fullname || !formData.condition) return alert('Fill Name and Condition');
+    setFormError('');
+    if (!formData.fullname || !formData.condition) { setFormError('Please fill in Full Name and Condition.'); return; }
     const { data, error } = await supabase.from('patients').insert({
       fullname:     formData.fullname,
       dob:          formData.dob    || null,
@@ -53,7 +59,7 @@ function App() {
       urgency:      'medium',
       arrival_time: new Date().toISOString(),
     }).select().single();
-    if (error) { alert('Failed to add patient.'); return; }
+    if (error) { setFormError('Failed to register patient. Please try again.'); return; }
     setFormData({ fullname:'', dob:'', gender:'', phone:'', condition:'', urgency:'medium' });
     setRegisteredPat(data);
     setViewMode('ticket');
@@ -90,7 +96,7 @@ function App() {
         style={{ background:'none', border:'none', color:'#16a34a', cursor:'pointer', display:'flex', alignItems:'center', gap:8, fontWeight:700, fontSize:'11px', textTransform:'uppercase', letterSpacing:'0.15em', marginBottom:'1.5rem', padding:0 }}>
         <ArrowLeft size={16}/> Back
       </button>
-      <PatientIntakeForm formData={formData} setFormData={setFormData} addPatient={addPatient}/>
+      <PatientIntakeForm formData={formData} setFormData={setFormData} addPatient={addPatient} formError={formError}/>
     </div>
   );
 
@@ -149,7 +155,7 @@ function App() {
         zIndex:300,
         transition:'transform 0.25s ease',
         overflowY:'auto',
-      }} className="sidebar">
+      }} className={`sidebar${sidebarOpen ? ' open' : ''}`}>
 
         <button onClick={() => setSidebarOpen(false)}
           style={{ position:'absolute', top:'1rem', right:'1rem', background:'none', border:'none', cursor:'pointer', color:'rgba(15,23,42,0.45)', padding:4 }}
@@ -163,7 +169,7 @@ function App() {
             <Activity color={getAccentColor()} size={22}/>
           </div>
           <div>
-            <h1 style={{ fontWeight:900, fontSize:'0.95rem', letterSpacing:'-0.01em', color:'#0f172a', margin:0, lineHeight:1.1 }}>
+            <h1 style={{ fontWeight:900, fontSize:'1.25rem', letterSpacing:'-0.02em', color:'#0f172a', margin:0, lineHeight:1.1 }}>
               HEALTH<span style={{ color:getAccentColor() }}>FLOW</span>
             </h1>
             <p style={{ fontSize:'11px', fontWeight:800, textTransform:'uppercase', letterSpacing:'0.12em', color:getAccentColor(), margin:'3px 0 0', lineHeight:1 }}>
@@ -172,7 +178,7 @@ function App() {
           </div>
         </div>
 
-        {/* Nav */}
+        {/* Nav — Dashboard only, no Profile */}
         <nav style={{ flex:1 }}>
           <button style={{
             width:'100%',
@@ -192,24 +198,6 @@ function App() {
           }}>
             {getRoleIcon()}
             <span>Dashboard</span>
-          </button>
-          <button style={{
-            width:'100%',
-            display:'flex',
-            alignItems:'center',
-            gap:'0.85rem',
-            padding:'1rem 1rem',
-            borderRadius:'1rem',
-            background:'transparent',
-            border:'1px solid rgba(15,23,42,0.08)',
-            color:'#4b5563',
-            fontWeight:700,
-            textTransform:'uppercase',
-            letterSpacing:'0.1em',
-            cursor:'default',
-          }}>
-            <User size={20} color='#6b7280' />
-            <span>Profile</span>
           </button>
         </nav>
 
@@ -256,7 +244,7 @@ function App() {
           </button>
           <div style={{ display:'flex', alignItems:'center', gap:8 }}>
             <Activity color="#16a34a" size={20}/>
-            <span style={{ fontWeight:900, fontSize:'1rem', fontStyle:'italic', letterSpacing:'-1px', color:'#1a3a2a' }}>
+            <span style={{ fontWeight:900, fontSize:'1.25rem', fontStyle:'italic', letterSpacing:'-1px', color:'#1a3a2a' }}>
               HEALTH<span style={{ color:'#16a34a' }}>FLOW</span>
             </span>
           </div>
@@ -267,8 +255,8 @@ function App() {
         </header>
 
         {/* CONTENT */}
-        <div className="desktop-spacer" style={{ marginLeft:'260px' }}>
-          <main style={{ flex:1, overflowY:'auto' }}>
+        <div className="desktop-spacer" style={{ marginLeft:'260px', height:'100vh', overflowY:'auto' }}>
+          <main style={{ flex:1 }}>
             <div style={{ maxWidth:'1100px', margin:'0 auto' }}>
               {currentUser?.role === 'triage'  && <TriageNurseView patients={patients} getSortedPatients={getSortedPatients}/>}
               {currentUser?.role === 'doctor'  && <DoctorView getSortedPatients={getSortedPatients}/>}
