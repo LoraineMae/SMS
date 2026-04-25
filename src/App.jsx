@@ -50,14 +50,16 @@ function App() {
   const addPatient = async () => {
     setFormError('');
     if (!formData.fullname || !formData.condition) { setFormError('Please fill in Full Name and Condition.'); return; }
+    const { data: ticketNum } = await supabase.rpc('get_next_ticket_number');
     const { data, error } = await supabase.from('patients').insert({
-      fullname:     formData.fullname,
-      dob:          formData.dob    || null,
-      gender:       formData.gender || null,
-      phone:        formData.phone  || null,
-      condition:    formData.condition,
-      urgency:      'medium',
-      arrival_time: new Date().toISOString(),
+      fullname:      formData.fullname,
+      dob:           formData.dob    || null,
+      gender:        formData.gender || null,
+      phone:         formData.phone  || null,
+      condition:     formData.condition,
+      urgency:       'medium',
+      arrival_time:  new Date().toISOString(),
+      ticket_number: ticketNum,
     }).select().single();
     if (error) { setFormError('Failed to register patient. Please try again.'); return; }
     setFormData({ fullname:'', dob:'', gender:'', phone:'', condition:'', urgency:'medium' });
@@ -111,7 +113,7 @@ function App() {
 
   // ── DASHBOARD ─────────────────────────────────────────────────────────────
   return (
-    <div style={{ display:'flex', minHeight:'100vh', background:'#f0faf4', fontFamily:'Poppins, sans-serif' }}>
+    <div style={{ display:'flex', minHeight:'100vh', background:'#f0faf4', fontFamily:'Poppins, sans-serif', overflowX:'hidden' }}>
 
       {/* TIMEOUT MODAL */}
       {showTimeout && (
@@ -255,9 +257,9 @@ function App() {
         </header>
 
         {/* CONTENT */}
-        <div className="desktop-spacer" style={{ marginLeft:'260px', height:'100vh', overflowY:'auto' }}>
-          <main style={{ flex:1 }}>
-            <div style={{ maxWidth:'1100px', margin:'0 auto' }}>
+        <div className="desktop-spacer" style={{ marginLeft:'260px', height:'100vh', overflowY:'auto', overflowX:'hidden' }}>
+          <main style={{ flex:1, minWidth:0 }}>
+            <div style={{ maxWidth:'1100px', margin:'0 auto', minWidth:0 }}>
               {currentUser?.role === 'triage'  && <TriageNurseView patients={patients} getSortedPatients={getSortedPatients}/>}
               {currentUser?.role === 'doctor'  && <DoctorView getSortedPatients={getSortedPatients}/>}
               {currentUser?.role === 'manager' && <ManagerView patients={patients}/>}

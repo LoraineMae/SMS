@@ -10,5 +10,24 @@ html {
 body {
   overflow-x: hidden;
   max-width: 100vw;
-  overflow-y: hidden;
+  overflow: hidden;
+}
+
+/* Navbar responsive — show desktop links above 1024px, hamburger below */
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.hamburger-btn {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .desktop-nav {
+    display: none !important;
+  }
+  .hamburger-btn {
+    display: flex !important;
+  }
 }

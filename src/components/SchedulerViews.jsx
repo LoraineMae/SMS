@@ -91,13 +91,17 @@ const PatientDetailModal = ({ patient, onClose }) => {
 
 // ─── ROLE SELECTION ───────────────────────────────────────────────────────────
 export const RoleSelectionScreen = ({ onSelect }) => {
-  const [activeNav,  setActiveNav]  = React.useState(null); // 'login' | 'about' | 'contact'
+  const [activeNav,  setActiveNav]  = React.useState(null);
+  const [menuOpen,   setMenuOpen]   = React.useState(false);
+
+  const toggleMenu = () => { setMenuOpen(v => !v); setActiveNav(null); };
+  const closeAll   = () => { setMenuOpen(false); setActiveNav(null); };
 
   return (
     <div style={{ minHeight:'100vh', display:'flex', flexDirection:'column', background:'#f0faf4', fontFamily:'Poppins, sans-serif', overflow:'hidden' }}>
 
       {/* ══════════════════════════════════════
-          NAVBAR — matches reference style
+          NAVBAR
       ══════════════════════════════════════ */}
       <nav style={{
         background:'linear-gradient(135deg, #14532d, #166534)',
@@ -111,7 +115,7 @@ export const RoleSelectionScreen = ({ onSelect }) => {
         top:0,
         zIndex:100,
       }}>
-        {/* Left — Logo + Name */}
+        {/* Left — Logo */}
         <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
           <div style={{ width:44, height:44, borderRadius:'50%', background:'rgba(255,255,255,0.15)', border:'2px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center' }}>
             <Activity color="white" size={22}/>
@@ -126,8 +130,8 @@ export const RoleSelectionScreen = ({ onSelect }) => {
           </div>
         </div>
 
-        {/* Right — Nav Links */}
-        <div style={{ display:'flex', alignItems:'center', gap:'0.25rem' }}>
+        {/* Desktop nav links */}
+        <div className="desktop-nav" style={{ alignItems:'center', gap:'0.25rem' }}>
           {[
             { key:'about',   label:'ABOUT'   },
             { key:'contact', label:'CONTACT' },
@@ -138,19 +142,10 @@ export const RoleSelectionScreen = ({ onSelect }) => {
               onClick={() => setActiveNav(activeNav === item.key ? null : item.key)}
               style={{
                 background: activeNav === item.key ? 'rgba(255,255,255,0.18)' : 'transparent',
-                border:'none',
-                color:'white',
-                padding:'0.6rem 1.25rem',
-                borderRadius:'0.5rem',
-                fontWeight:700,
-                fontSize:'12px',
-                letterSpacing:'0.12em',
-                cursor:'pointer',
-                textTransform:'uppercase',
-                transition:'background 0.15s',
-                display:'flex',
-                alignItems:'center',
-                gap:'5px',
+                border:'none', color:'white', padding:'0.6rem 1.25rem', borderRadius:'0.5rem',
+                fontWeight:700, fontSize:'12px', letterSpacing:'0.12em', cursor:'pointer',
+                textTransform:'uppercase', transition:'background 0.15s',
+                display:'flex', alignItems:'center', gap:'5px',
               }}
               onMouseOver={e => { if(activeNav !== item.key) e.currentTarget.style.background='rgba(255,255,255,0.1)'; }}
               onMouseOut={e => { if(activeNav !== item.key) e.currentTarget.style.background='transparent'; }}
@@ -160,14 +155,80 @@ export const RoleSelectionScreen = ({ onSelect }) => {
             </button>
           ))}
         </div>
+
+        {/* Mobile hamburger button */}
+        <button
+          className="hamburger-btn"
+          onClick={toggleMenu}
+          style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.25)', borderRadius:'0.5rem', padding:'0.5rem', cursor:'pointer', flexDirection:'column', gap:'4px', alignItems:'center', justifyContent:'center', width:40, height:40 }}
+        >
+          <span style={{ display:'block', width:18, height:2, background:'white', borderRadius:2, transition:'all 0.2s', transform: menuOpen ? 'rotate(45deg) translate(4px, 4px)' : 'none' }}/>
+          <span style={{ display:'block', width:18, height:2, background:'white', borderRadius:2, transition:'all 0.2s', opacity: menuOpen ? 0 : 1 }}/>
+          <span style={{ display:'block', width:18, height:2, background:'white', borderRadius:2, transition:'all 0.2s', transform: menuOpen ? 'rotate(-45deg) translate(4px, -4px)' : 'none' }}/>
+        </button>
       </nav>
 
+      {/* Mobile dropdown menu */}
+      {menuOpen && (
+        <div style={{ background:'#166534', borderBottom:'2px solid rgba(255,255,255,0.1)', boxShadow:'0 8px 24px rgba(0,0,0,0.2)', zIndex:99, display:'flex', flexDirection:'column' }}
+          className="hamburger-btn">
+          {/* About */}
+          <button onClick={() => setActiveNav(activeNav === 'about' ? null : 'about')}
+            style={{ padding:'1rem 1.5rem', background: activeNav==='about' ? 'rgba(255,255,255,0.12)' : 'transparent', border:'none', borderBottom:'1px solid rgba(255,255,255,0.08)', color:'white', fontWeight:700, fontSize:'13px', textTransform:'uppercase', letterSpacing:'0.1em', cursor:'pointer', textAlign:'left', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+            About <span style={{ opacity:0.6 }}>{activeNav==='about' ? '▴' : '▾'}</span>
+          </button>
+          {activeNav === 'about' && (
+            <div style={{ background:'rgba(0,0,0,0.15)', padding:'1.25rem 1.5rem', borderBottom:'1px solid rgba(255,255,255,0.08)' }}>
+              <p style={{ color:'rgba(255,255,255,0.85)', fontSize:'12.5px', lineHeight:1.75, margin:'0 0 0.5rem' }}>
+                A Priority-Based Patient Scheduling System designed to automate triage and manage patient queues in real time.
+              </p>
+              <p style={{ color:'rgba(255,255,255,0.5)', fontSize:'11.5px', lineHeight:1.75, margin:0 }}>
+                Patients sorted by urgency — Critical, High, Medium, and Low.
+              </p>
+            </div>
+          )}
+
+          {/* Contact */}
+          <button onClick={() => setActiveNav(activeNav === 'contact' ? null : 'contact')}
+            style={{ padding:'1rem 1.5rem', background: activeNav==='contact' ? 'rgba(255,255,255,0.12)' : 'transparent', border:'none', borderBottom:'1px solid rgba(255,255,255,0.08)', color:'white', fontWeight:700, fontSize:'13px', textTransform:'uppercase', letterSpacing:'0.1em', cursor:'pointer', textAlign:'left', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+            Contact <span style={{ opacity:0.6 }}>{activeNav==='contact' ? '▴' : '▾'}</span>
+          </button>
+          {activeNav === 'contact' && (
+            <div style={{ background:'rgba(0,0,0,0.15)', padding:'1.25rem 1.5rem', borderBottom:'1px solid rgba(255,255,255,0.08)', display:'flex', flexDirection:'column', gap:'0.5rem' }}>
+              <p style={{ color:'rgba(255,255,255,0.85)', fontSize:'12px', fontWeight:700, margin:0 }}>Mariano Marcos State University</p>
+              <p style={{ color:'rgba(255,255,255,0.6)', fontSize:'11.5px', margin:0 }}>College of Computing and Information Sciences</p>
+              <p style={{ color:'#86efac', fontSize:'12px', fontWeight:600, margin:'4px 0 0' }}>lorainemaemaramba@gmail.com</p>
+            </div>
+          )}
+
+          {/* Staff Login */}
+          <button onClick={() => setActiveNav(activeNav === 'login' ? null : 'login')}
+            style={{ padding:'1rem 1.5rem', background: activeNav==='login' ? 'rgba(255,255,255,0.12)' : 'transparent', border:'none', color:'white', fontWeight:700, fontSize:'13px', textTransform:'uppercase', letterSpacing:'0.1em', cursor:'pointer', textAlign:'left', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+            Staff Login <span style={{ opacity:0.6 }}>{activeNav==='login' ? '▴' : '▾'}</span>
+          </button>
+          {activeNav === 'login' && (
+            <div style={{ background:'rgba(0,0,0,0.15)', padding:'1rem 1.5rem', display:'flex', flexDirection:'column', gap:'0.75rem' }}>
+              {[
+                { id:'triage',  label:'Nurse Login',   icon:<Activity size={15}/>,    color:'#86efac', border:'rgba(134,239,172,0.3)' },
+                { id:'doctor',  label:'Doctor Login',  icon:<Stethoscope size={15}/>, color:'#6ee7f7', border:'rgba(110,231,247,0.3)' },
+                { id:'manager', label:'Manager Login', icon:<BarChart3 size={15}/>,   color:'#fde68a', border:'rgba(253,230,138,0.3)' },
+              ].map(role => (
+                <button key={role.id} onClick={() => { onSelect(role.id); closeAll(); }}
+                  style={{ display:'flex', alignItems:'center', gap:'10px', padding:'0.85rem 1rem', borderRadius:'0.75rem', background:'rgba(255,255,255,0.08)', border:`1px solid ${role.border}`, color:role.color, cursor:'pointer', fontWeight:700, fontSize:'12px', textTransform:'uppercase', letterSpacing:'0.1em' }}>
+                  {role.icon} {role.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* ══════════════════════════════════════
-          DROPDOWN PANELS
+          DESKTOP DROPDOWN PANELS
       ══════════════════════════════════════ */}
 
-      {/* About dropdown */}
-      {activeNav === 'about' && (
+      {/* About dropdown — desktop only */}
+      {activeNav === 'about' && !menuOpen && (
         <div style={{ background:'white', borderBottom:'2px solid rgba(22,101,52,0.15)', boxShadow:'0 8px 24px rgba(0,0,0,0.08)', padding:'2rem 3rem', display:'grid', gridTemplateColumns:'1fr 1fr', gap:'2rem', maxWidth:'860px', margin:'0 auto', width:'100%' }}>
           <div>
             <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:'0.75rem' }}>
@@ -195,8 +256,8 @@ export const RoleSelectionScreen = ({ onSelect }) => {
         </div>
       )}
 
-      {/* Contact dropdown */}
-      {activeNav === 'contact' && (
+      {/* Contact dropdown — desktop only */}
+      {activeNav === 'contact' && !menuOpen && (
         <div style={{ background:'white', borderBottom:'2px solid rgba(22,101,52,0.15)', boxShadow:'0 8px 24px rgba(0,0,0,0.08)', padding:'2rem 3rem', display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'2rem', maxWidth:'860px', margin:'0 auto', width:'100%' }}>
           <div>
             <p style={{ color:'#9ca3af', fontSize:'10px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.15em', margin:'0 0 6px' }}>Institution</p>
@@ -216,23 +277,20 @@ export const RoleSelectionScreen = ({ onSelect }) => {
         </div>
       )}
 
-      {/* Staff Login dropdown */}
-      {activeNav === 'login' && (
+      {/* Staff Login dropdown — desktop only */}
+      {activeNav === 'login' && !menuOpen && (
         <div style={{ background:'white', borderBottom:'2px solid rgba(22,101,52,0.15)', boxShadow:'0 8px 24px rgba(0,0,0,0.08)', padding:'1.5rem 3rem', display:'flex', gap:'1rem', justifyContent:'flex-end', maxWidth:'100%' }}>
           {[
             { id:'triage',  label:'Nurse Login',   icon:<Activity size={16}/>,    color:'#16a34a', bg:'rgba(22,163,74,0.08)',  border:'rgba(22,163,74,0.2)'  },
             { id:'doctor',  label:'Doctor Login',  icon:<Stethoscope size={16}/>, color:'#0d9488', bg:'rgba(13,148,136,0.08)', border:'rgba(13,148,136,0.2)' },
             { id:'manager', label:'Manager Login', icon:<BarChart3 size={16}/>,   color:'#d97706', bg:'rgba(217,119,6,0.08)',  border:'rgba(217,119,6,0.2)'  },
           ].map(role => (
-            <button
-              key={role.id}
-              onClick={() => onSelect(role.id)}
+            <button key={role.id} onClick={() => { onSelect(role.id); closeAll(); }}
               style={{ display:'flex', alignItems:'center', gap:'8px', padding:'0.75rem 1.5rem', borderRadius:'0.75rem', background:role.bg, border:`1px solid ${role.border}`, color:role.color, cursor:'pointer', fontWeight:700, fontSize:'12px', textTransform:'uppercase', letterSpacing:'0.1em', transition:'all 0.15s' }}
               onMouseOver={e => e.currentTarget.style.opacity='0.8'}
               onMouseOut={e => e.currentTarget.style.opacity='1'}
             >
-              {role.icon}
-              {role.label}
+              {role.icon} {role.label}
             </button>
           ))}
         </div>
@@ -675,26 +733,25 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
       </div>
 
       {/* Search & filters */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+      <div className="flex flex-col gap-3 mb-6">
         <div className="relative flex-1">
           <Search size={13} style={{position:"absolute",left:"12px",top:"50%",transform:"translateY(-50%)",opacity:0.45,color:"var(--text-muted)",pointerEvents:"none"}}/>
           <input className="form-input" style={{paddingLeft:"36px"}} placeholder="Search patients..." value={search} onChange={e => setSearch(e.target.value)}/>
         </div>
-        <div className="grid grid-cols-3 sm:flex gap-3">
-          <select className="form-input" value={filter} onChange={e => setFilter(e.target.value)}>
+        <div className="grid grid-cols-3 gap-3">
+          <select className="form-input text-xs" value={filter} onChange={e => setFilter(e.target.value)}>
             <option value="all">All Levels</option>
             <option value="critical">Critical</option>
             <option value="high">High</option>
             <option value="medium">Medium</option>
             <option value="low">Low</option>
           </select>
-          <select className="form-input" value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+          <select className="form-input text-xs" value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
             <option value="all">All Patients</option>
             <option value="waiting">Waiting Only</option>
             <option value="done">Finished Only</option>
           </select>
-
-          <select className="form-input" value={shift} onChange={e => setShift(e.target.value)}>
+          <select className="form-input text-xs" value={shift} onChange={e => setShift(e.target.value)}>
             <option value="today">Today</option>
             <option value="week">This Week</option>
             <option value="all">All Time</option>
@@ -703,7 +760,7 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
       </div>
 
       {/* Queue */}
-      <div className="dashboard-card p-8">
+      <div className="dashboard-card p-4 sm:p-8">
         <div className="flex justify-between items-center mb-6">
           <div>
             <h3 className="text-[var(--text-primary,#1a3a2a)] font-black text-xs uppercase tracking-widest">Live Priority Queue</h3>
@@ -726,36 +783,36 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
                 {search || filter !== 'all' ? 'No patients match your filter' : 'No Active Patients'}
               </div>
             : sorted.map((p, i) => (
-              <div key={p.id} style={{background: p.status==='done' ? 'var(--bg-input)' : 'var(--bg-nav-active)', border: `1px solid ${p.status==='done' ? 'var(--border)' : 'var(--border-input)'}`, opacity: p.status==='done' ? 0.75 : 1}} className="p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-                <div className="flex items-center gap-4 flex-1 min-w-0">
-                  <div className={`text-2xl font-black shrink-0 w-8 text-center ${p.status === 'done' ? 'opacity-0' : 'text-green-200'}`}>
+              <div key={p.id} style={{background: p.status==='done' ? 'var(--bg-input)' : 'var(--bg-nav-active)', border: `1px solid ${p.status==='done' ? 'var(--border)' : 'var(--border-input)'}`, opacity: p.status==='done' ? 0.75 : 1}} className="p-3 sm:p-5 rounded-2xl flex flex-col gap-2 overflow-hidden">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={`text-xl font-black shrink-0 w-7 text-center ${p.status === 'done' ? 'opacity-0' : 'text-green-200'}`}>
                     {p.status === 'done' ? '' : (i+1).toString().padStart(2,'0')}
                   </div>
-                  <div className="min-w-0 cursor-pointer flex-1" onClick={() => setSelectedPatient(p)}>
+                  <div className="min-w-0 flex-1 cursor-pointer" onClick={() => setSelectedPatient(p)}>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="font-bold text-[var(--text-primary,#1a3a2a)] text-base sm:text-lg truncate hover:text-green-600 transition-colors">{p.fullname}</p>
+                      <p className="font-bold text-[var(--text-primary,#1a3a2a)] text-sm truncate hover:text-green-600 transition-colors">{p.fullname}</p>
                       {p.status === 'done' && <span className="px-2 py-0.5 bg-green-500/20 text-green-600 rounded text-[9px] font-black uppercase shrink-0">Consulted</span>}
                     </div>
-                    <p className="text-sm text-gray-400 italic truncate hover:text-green-500 transition-colors">"{p.condition}"</p>
-                    <p className="text-gray-400 text-[11px] mt-1 flex items-center gap-1">
-                      <Clock size={10}/> {timeAgo(p.arrival_time)}
-                      <span className="ml-2 text-green-400 text-[10px] font-bold">· tap for details</span>
+                    <p className="text-xs text-gray-400 italic truncate">"{p.condition}"</p>
+                    <p className="text-gray-400 text-[10px] mt-0.5 flex items-center gap-1">
+                      <Clock size={9}/> {timeAgo(p.arrival_time)}
+                      <span className="ml-1 text-green-400 font-bold">· tap for details</span>
                     </p>
                   </div>
-                </div>
-                <div className="shrink-0 self-end sm:self-auto">
-                  {p.status === 'done'
-                    ? <span className="text-green-500 text-[11px] font-black uppercase">✓ Done</span>
-                    : updating === p.id
-                      ? <Loader2 size={16} className="text-green-400 animate-spin"/>
-                      : <select value={p.urgency} onChange={e => updateUrgency(p.id, e.target.value)}
-                          className="bg-white border border-green-200 text-[var(--text-primary,#1a3a2a)] px-3 py-2 rounded-lg font-bold text-[11px] uppercase cursor-pointer w-full sm:w-auto">
-                          <option value="low">Low</option>
-                          <option value="medium">Medium</option>
-                          <option value="high">High</option>
-                          <option value="critical">Critical</option>
-                        </select>
-                  }
+                  <div className="shrink-0">
+                    {p.status === 'done'
+                      ? <span className="text-green-500 text-[11px] font-black uppercase">✓ Done</span>
+                      : updating === p.id
+                        ? <Loader2 size={16} className="text-green-400 animate-spin"/>
+                        : <select value={p.urgency} onChange={e => updateUrgency(p.id, e.target.value)}
+                            className="bg-white border border-green-200 text-[var(--text-primary,#1a3a2a)] px-2 py-1.5 rounded-lg font-bold text-[10px] uppercase cursor-pointer">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                            <option value="critical">Critical</option>
+                          </select>
+                    }
+                  </div>
                 </div>
               </div>
             ))
@@ -918,17 +975,17 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
 
       {tab === 'history' && (
         <div className="dashboard-card p-8">
-          <div className="flex flex-wrap justify-between items-center mb-4 border-b border-green-100 pb-4 gap-3">
+          <div className="flex flex-col gap-3 mb-4 border-b border-green-100 pb-4">
             <h3 className="text-[var(--text-primary,#1a3a2a)] font-black text-xs uppercase tracking-widest">Consultation History</h3>
-            <div className="flex items-center gap-2">
-              <select className="form-input w-36 text-xs" value={historyUrgency} onChange={e => setHistoryUrgency(e.target.value)}>
+            <div className="grid grid-cols-2 gap-3">
+              <select className="form-input text-xs" value={historyUrgency} onChange={e => setHistoryUrgency(e.target.value)}>
                 <option value="all">All Levels</option>
                 <option value="critical">Critical</option>
                 <option value="high">High</option>
                 <option value="medium">Medium</option>
                 <option value="low">Low</option>
               </select>
-              <select className="form-input w-36 text-xs" value={shiftDoc} onChange={e => setShiftDoc(e.target.value)}>
+              <select className="form-input text-xs" value={shiftDoc} onChange={e => setShiftDoc(e.target.value)}>
                 <option value="today">Today</option>
                 <option value="week">This Week</option>
                 <option value="all">All Time</option>
@@ -937,13 +994,13 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
           </div>
           <div className="space-y-3">
             {history.filter(shiftFilterDoc).filter(p => historyUrgency === 'all' || p.urgency === historyUrgency).map(p => (
-              <div key={p.id} className="p-4 bg-green-50 rounded-2xl border border-green-100 cursor-pointer hover:border-green-300 transition-colors" onClick={() => setSelectedPatient(p)}>
-                <div className="flex justify-between items-start">
+              <div key={p.id} className="p-3 sm:p-4 bg-green-50 rounded-2xl border border-green-100 cursor-pointer hover:border-green-300 transition-colors overflow-hidden" onClick={() => setSelectedPatient(p)}>
+                <div className="flex justify-between items-start gap-2 min-w-0">
                   <div className="flex-1 min-w-0">
                     <p className="text-[var(--text-primary,#1a3a2a)] font-bold truncate">{p.fullname}</p>
                     <p className="text-gray-400 text-xs italic truncate">"{p.condition}"</p>
                   </div>
-                  <div className="text-right shrink-0 ml-3">
+                  <div className="text-right shrink-0">
                     <UrgencyBadge urgency={p.urgency}/>
                     {p.completed_at && <p className="text-gray-400 text-[11px] mt-1">{timeAgo(p.completed_at)}</p>}
                   </div>
@@ -1315,16 +1372,16 @@ export const ManagerView = ({ patients: patientsProp }) => {
       {/* PATIENT RECORDS */}
       {tab === 'patients' && (
         <div className="dashboard-card p-6 sm:p-8">
-          <div className="flex flex-wrap justify-between items-center mb-4 border-b border-green-100 pb-4 gap-3">
+          <div className="flex flex-col gap-3 mb-4 border-b border-green-100 pb-4">
             <h3 className="text-[var(--text-primary,#1a3a2a)] font-black text-xs uppercase tracking-widest">All Patient Records</h3>
-            <div className="flex items-center gap-2">
-              <select className="form-input text-xs" value={mgrStatusFilter} onChange={e => setMgrStatusFilter(e.target.value)}>
+            <div className="flex flex-wrap gap-2">
+              <select className="form-input text-xs flex-1 min-w-[120px]" value={mgrStatusFilter} onChange={e => setMgrStatusFilter(e.target.value)}>
                 <option value="all">All Patients</option>
                 <option value="waiting">Waiting Only</option>
                 <option value="done">Finished Only</option>
               </select>
               <button onClick={exportCSV}
-                className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-600 border border-green-200 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-green-100 transition-all">
+                className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-600 border border-green-200 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-green-100 transition-all whitespace-nowrap">
                 <Download size={13}/> Export CSV
               </button>
             </div>
@@ -1335,9 +1392,9 @@ export const ManagerView = ({ patients: patientsProp }) => {
           </div>
           <div className="space-y-3 max-h-[500px] overflow-y-auto">
             {filtPatients.map(p => (
-              <div key={p.id} className="p-4 sm:p-5 bg-green-50 rounded-2xl border border-green-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 cursor-pointer hover:border-green-300 transition-colors" onClick={() => setSelectedPatient(p)}>
+              <div key={p.id} className="p-3 sm:p-4 bg-green-50 rounded-2xl border border-green-100 flex justify-between items-start gap-2 cursor-pointer hover:border-green-300 transition-colors overflow-hidden" onClick={() => setSelectedPatient(p)}>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <p className="text-[var(--text-primary,#1a3a2a)] font-bold truncate">{p.fullname}</p>
                     {p.status==='done' && <span className="px-2 py-0.5 bg-green-500/20 text-green-400 rounded text-[9px] font-black uppercase shrink-0">Done</span>}
                   </div>

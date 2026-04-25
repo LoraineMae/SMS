@@ -98,6 +98,8 @@ body {
   border-radius: 1.5rem;
   border: 1px solid var(--border);
   transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  overflow: hidden;
+  min-width: 0;
 }
 
 .form-input {
