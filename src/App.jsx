@@ -175,7 +175,7 @@ function App() {
               HEALTH<span style={{ color:getAccentColor() }}>FLOW</span>
             </h1>
             <p style={{ fontSize:'11px', fontWeight:800, textTransform:'uppercase', letterSpacing:'0.12em', color:getAccentColor(), margin:'3px 0 0', lineHeight:1 }}>
-              {currentUser?.role === 'triage' ? 'Triage' : currentUser?.role === 'doctor' ? 'Doctor' : 'Manager'}
+              {currentUser?.role === 'triage' ? 'Nurse' : currentUser?.role === 'doctor' ? 'Doctor' : 'Manager'}
             </p>
           </div>
         </div>

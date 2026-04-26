@@ -713,7 +713,7 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
     <div className="p-4 sm:p-8 text-[var(--text-primary,#1a3a2a)]">
       <PatientDetailModal patient={selectedPatient} onClose={() => setSelectedPatient(null)}/>
       <div className="mb-6">
-        <h2 style={{color:"#0f172a",fontWeight:900,fontSize:"1.65rem",margin:0,lineHeight:1.1}}>Triage Dashboard</h2>
+        <h2 style={{color:"#0f172a",fontWeight:900,fontSize:"1.65rem",margin:0,lineHeight:1.1}}>Nurse Dashboard</h2>
         <p className="text-green-600/60 text-[10px] uppercase tracking-[0.3em] font-bold mt-2">Manage Patient Urgency Levels</p>
       </div>
 
@@ -1461,7 +1461,7 @@ export const ManagerView = ({ patients: patientsProp }) => {
                 <div>
                   <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block ml-2">Role</label>
                   <select className="form-input" value={form.role} onChange={e=>setForm({...form,role:e.target.value})}>
-                    <option value="triage">Nurse (Triage)</option>
+                    <option value="triage">Nurse</option>
                     <option value="doctor">Doctor</option>
                     <option value="manager">Manager</option>
                   </select>
