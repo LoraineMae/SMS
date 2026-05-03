@@ -84,6 +84,17 @@ const PatientDetailModal = ({ patient, onClose }) => {
             <p style={{ color:'#1a3a2a', fontSize:'12px', fontWeight:600, margin:0, lineHeight:1.6 }}>{patient.doctor_notes}</p>
           </div>
         )}
+
+        {/* Consulted By */}
+        {patient.consulted_by && (
+          <div style={{ background:'#f0fdf4', border:'1px solid rgba(34,197,94,0.2)', borderRadius:'0.75rem', padding:'0.75rem 0.85rem', marginBottom:'0.5rem', display:'flex', alignItems:'center', gap:'0.5rem' }}>
+            <span style={{ fontSize:'14px' }}>👨‍⚕️</span>
+            <div>
+              <p style={{ color:'#9ca3af', fontSize:'9px', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.12em', margin:'0 0 3px' }}>Consulted by</p>
+              <p style={{ color:'#16a34a', fontSize:'12px', fontWeight:700, margin:0 }}>Dr. {patient.consulted_by}</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -416,16 +427,14 @@ export const PatientIntakeForm = ({ formData, setFormData, addPatient: addPatien
     setSubmitting(true);
     try {
       const sb = await getSupabase();
-      const { data: ticketNum } = await sb.rpc('get_next_ticket_number');
       const { data, error } = await sb.from('patients').insert({
-        fullname:      form.fullname.trim(),
-        dob:           form.dob,
-        gender:        form.gender,
-        phone:         form.phone.trim(),
-        condition:     form.condition.trim(),
-        urgency:       'medium',
-        arrival_time:  new Date().toISOString(),
-        ticket_number: ticketNum,
+        fullname:     form.fullname.trim(),
+        dob:          form.dob,
+        gender:       form.gender,
+        phone:        form.phone.trim(),
+        condition:    form.condition.trim(),
+        urgency:      'medium',
+        arrival_time: new Date().toISOString(),
       }).select().single();
       if (error) throw error;
       setTicket(data);
@@ -692,8 +701,12 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
   const [statusFilter, setStatusFilter] = React.useState('all'); // 'all' | 'waiting' | 'done'
   const shiftFilter = (p) => {
     const t = new Date(p.arrival_time), now = new Date();
-    if (shift === 'today') return t.toDateString() === now.toDateString();
-    if (shift === 'week')  return t >= new Date(now - 7 * 24 * 60 * 60 * 1000);
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const weekStart  = new Date(todayStart); weekStart.setDate(todayStart.getDate() - todayStart.getDay());
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    if (shift === 'today') return t >= todayStart;
+    if (shift === 'week')  return t >= weekStart;
+    if (shift === 'month') return t >= monthStart;
     return true;
   };
 
@@ -754,6 +767,7 @@ export const TriageNurseView = ({ patients: patientsProp, getSortedPatients: get
           <select className="form-input text-xs" value={shift} onChange={e => setShift(e.target.value)}>
             <option value="today">Today</option>
             <option value="week">This Week</option>
+            <option value="month">This Month</option>
             <option value="all">All Time</option>
           </select>
         </div>
@@ -865,8 +879,12 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
 
   const shiftFilterDoc = (p) => {
     const t = new Date(p.completed_at || p.arrival_time), now = new Date();
-    if (shiftDoc === 'today') return t.toDateString() === now.toDateString();
-    if (shiftDoc === 'week')  return t >= new Date(now - 7 * 24 * 60 * 60 * 1000);
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const weekStart  = new Date(todayStart); weekStart.setDate(todayStart.getDate() - todayStart.getDay());
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    if (shiftDoc === 'today') return t >= todayStart;
+    if (shiftDoc === 'week')  return t >= weekStart;
+    if (shiftDoc === 'month') return t >= monthStart;
     return true;
   };
 
@@ -882,10 +900,13 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
     if (!current) return;
     setCompleting(true);
     const sb = await getSupabase();
+    const userStr = sessionStorage.getItem('hf_user');
+    const doctorName = userStr ? (JSON.parse(userStr).fullName || 'Doctor') : 'Doctor';
     await sb.from('patients').update({
-      status: 'done',
-      completed_at: new Date().toISOString(),
-      doctor_notes: notes.trim() || null,
+      status:        'done',
+      completed_at:  new Date().toISOString(),
+      doctor_notes:  notes.trim() || null,
+      consulted_by:  doctorName,
     }).eq('id', current.id);
     setNotes('');
     setCompleting(false);
@@ -985,11 +1006,14 @@ export const DoctorView = ({ getSortedPatients: getSortedProp }) => {
                 <option value="medium">Medium</option>
                 <option value="low">Low</option>
               </select>
-              <select className="form-input text-xs" value={shiftDoc} onChange={e => setShiftDoc(e.target.value)}>
-                <option value="today">Today</option>
-                <option value="week">This Week</option>
-                <option value="all">All Time</option>
-              </select>
+              <div className="flex rounded-xl overflow-hidden border border-green-200">
+                {[['today','Today'],['week','This Week'],['month','This Month'],['all','All Time']].map(([val,label]) => (
+                  <button key={val} onClick={() => setShiftDoc(val)}
+                    className={`flex-1 py-2 text-[9px] font-bold uppercase tracking-widest transition-all ${shiftDoc===val ? 'bg-green-600 text-white' : 'bg-white text-green-600 hover:bg-green-50'}`}>
+                    {label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
           <div className="space-y-3">
@@ -1061,7 +1085,9 @@ export const ManagerView = ({ patients: patientsProp }) => {
   const [editLoading,     setEditLoading]     = React.useState(false);
   const [editError,       setEditError]       = React.useState('');
   const [editSuccess,     setEditSuccess]     = React.useState('');
-  const [mgrStatusFilter, setMgrStatusFilter] = React.useState('all'); // 'all' | 'waiting' | 'done'
+  const [mgrStatusFilter,  setMgrStatusFilter]  = React.useState('all');
+  const [mgrUrgencyFilter, setMgrUrgencyFilter] = React.useState('all');
+  const [mgrTimeFilter,    setMgrTimeFilter]    = React.useState('all');
 
   const handleEditOpen = (s) => {
     setEditStaff(s);
@@ -1110,8 +1136,12 @@ export const ManagerView = ({ patients: patientsProp }) => {
 
   const shiftFilterMgr = (p) => {
     const t = new Date(p.arrival_time), now = new Date();
-    if (shiftMgr === 'today') return t.toDateString() === now.toDateString();
-    if (shiftMgr === 'week')  return t >= new Date(now - 7 * 24 * 60 * 60 * 1000);
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const weekStart  = new Date(todayStart); weekStart.setDate(todayStart.getDate() - todayStart.getDay());
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    if (shiftMgr === 'today') return t >= todayStart;
+    if (shiftMgr === 'week')  return t >= weekStart;
+    if (shiftMgr === 'month') return t >= monthStart;
     return true;
   };
 
@@ -1212,8 +1242,20 @@ export const ManagerView = ({ patients: patientsProp }) => {
 
   const filtStaff    = staffList.filter(s=>s.full_name.toLowerCase().includes(search.toLowerCase())||s.username.toLowerCase().includes(search.toLowerCase()));
   const filtPatients = patients
+    .filter(p => {
+      const now   = new Date();
+      const arr   = new Date(p.arrival_time);
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const weekStart  = new Date(todayStart); weekStart.setDate(todayStart.getDate() - todayStart.getDay());
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      if (mgrTimeFilter === 'today' && arr < todayStart) return false;
+      if (mgrTimeFilter === 'week'  && arr < weekStart)  return false;
+      if (mgrTimeFilter === 'month' && arr < monthStart) return false;
+      return true;
+    })
     .filter(p => mgrStatusFilter === 'waiting' ? p.status !== 'done' : mgrStatusFilter === 'done' ? p.status === 'done' : true)
-    .filter(p=>p.fullname.toLowerCase().includes(search.toLowerCase())||p.condition.toLowerCase().includes(search.toLowerCase()));
+    .filter(p => mgrUrgencyFilter === 'all' || p.urgency === mgrUrgencyFilter)
+    .filter(p => p.fullname.toLowerCase().includes(search.toLowerCase()) || p.condition.toLowerCase().includes(search.toLowerCase()));
 
   const TABS = ['overview','analytics','patients','create','staff'];
   const TAB_LABELS = { overview:'Overview', analytics:'Analytics', patients:'Patient Records', create:'+ Create Account', staff:'Staff List' };
@@ -1243,12 +1285,12 @@ export const ManagerView = ({ patients: patientsProp }) => {
         <div className="flex flex-col gap-6">
           <div className="flex items-center gap-3 flex-wrap">
             <span className="text-gray-400 text-[11px] font-bold uppercase tracking-widest">Showing:</span>
-            {['today','week','all'].map(s => (
+            {['today','week','month','all'].map(s => (
               <button key={s} onClick={() => setShiftMgr(s)}
                 className={`px-4 py-2 rounded-xl font-bold text-[11px] uppercase tracking-widest transition-all ${
                   shiftMgr === s ? 'bg-green-600 text-white' : 'bg-green-50 text-gray-400 hover:text-green-700'
                 }`}>
-                {s==='today'?'Today':s==='week'?'This Week':'All Time'}
+                {s==='today'?'Today':s==='week'?'This Week':s==='month'?'This Month':'All Time'}
               </button>
             ))}
           </div>
@@ -1303,12 +1345,12 @@ export const ManagerView = ({ patients: patientsProp }) => {
           {/* Time filter */}
           <div className="flex items-center gap-3 flex-wrap">
             <span className="text-gray-400 text-[11px] font-bold uppercase tracking-widest">Showing:</span>
-            {['today','week','all'].map(s => (
+            {['today','week','month','all'].map(s => (
               <button key={s} onClick={() => setShiftMgr(s)}
                 className={`px-4 py-2 rounded-xl font-bold text-[11px] uppercase tracking-widest transition-all ${
                   shiftMgr === s ? 'bg-green-600 text-white' : 'bg-green-50 text-gray-400 hover:text-green-700'
                 }`}>
-                {s==='today'?'Today':s==='week'?'This Week':'All Time'}
+                {s==='today'?'Today':s==='week'?'This Week':s==='month'?'This Month':'All Time'}
               </button>
             ))}
           </div>
@@ -1374,14 +1416,29 @@ export const ManagerView = ({ patients: patientsProp }) => {
         <div className="dashboard-card p-6 sm:p-8">
           <div className="flex flex-col gap-3 mb-4 border-b border-green-100 pb-4">
             <h3 className="text-[var(--text-primary,#1a3a2a)] font-black text-xs uppercase tracking-widest">All Patient Records</h3>
-            <div className="flex flex-wrap gap-2">
-              <select className="form-input text-xs flex-1 min-w-[120px]" value={mgrStatusFilter} onChange={e => setMgrStatusFilter(e.target.value)}>
+            <div className="grid grid-cols-2 gap-2">
+              <select className="form-input text-xs" value={mgrStatusFilter} onChange={e => setMgrStatusFilter(e.target.value)}>
                 <option value="all">All Patients</option>
                 <option value="waiting">Waiting Only</option>
                 <option value="done">Finished Only</option>
               </select>
+              <select className="form-input text-xs" value={mgrUrgencyFilter} onChange={e => setMgrUrgencyFilter(e.target.value)}>
+                <option value="all">All Levels</option>
+                <option value="critical">Critical</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+              <div className="col-span-2 flex rounded-xl overflow-hidden border border-green-200">
+                {[['all','All Time'],['today','Today'],['week','This Week'],['month','This Month']].map(([val,label]) => (
+                  <button key={val} onClick={() => setMgrTimeFilter(val)}
+                    className={`flex-1 py-2 text-[9px] font-bold uppercase tracking-widest transition-all ${mgrTimeFilter===val ? 'bg-green-600 text-white' : 'bg-white text-green-600 hover:bg-green-50'}`}>
+                    {label}
+                  </button>
+                ))}
+              </div>
               <button onClick={exportCSV}
-                className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-600 border border-green-200 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-green-100 transition-all whitespace-nowrap">
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-green-50 text-green-600 border border-green-200 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-green-100 transition-all whitespace-nowrap">
                 <Download size={13}/> Export CSV
               </button>
             </div>

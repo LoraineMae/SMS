@@ -1,11 +1,10 @@
 // src/components/LoginScreen.jsx
 import React, { useState } from 'react';
-import { ArrowLeft, Eye, EyeOff, ShieldCheck, AlertCircle, Loader2, Activity, Stethoscope, BarChart3 } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, AlertCircle, Loader2, Activity, Stethoscope, BarChart3 } from 'lucide-react';
 
 export const LoginScreen = ({ role, onLogin, onBack, authError, authLoading }) => {
   const [username,     setUsername]     = useState('');
   const [password,     setPassword]     = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [localError,   setLocalError]   = useState('');
 
   const error = localError || authError;
@@ -64,25 +63,15 @@ export const LoginScreen = ({ role, onLogin, onBack, authError, authLoading }) =
           </div>
           <div>
             <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block ml-1">Password</label>
-            <div className="relative">
-              <input
-                className="form-input pr-12"
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Enter your password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-                disabled={authLoading}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(v => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
-                tabIndex={-1}
-              >
-                {showPassword ? <EyeOff size={16}/> : <Eye size={16}/>}
-              </button>
-            </div>
+            <input
+              className="form-input"
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+              disabled={authLoading}
+            />
           </div>
 
           <button
